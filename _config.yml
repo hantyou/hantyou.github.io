@@ -22,7 +22,7 @@ subtitle                 : This is subtitle test# site tagline that appears belo
 name                     : "Peiyuan Zhai"
 description              : "A website about me and my current works.."
 url                      : "hantyou.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : "/main" # the subpath of your site, e.g. "/blog"
+baseurl                  :  # the subpath of your site, e.g. "/blog"
 repository               : "hantyou/hantyou.github.io"# GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : "https://github.com/hantyou/hantyou.github.io/blob/master/pictures/IMG_20210801_142533.jpg" # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
