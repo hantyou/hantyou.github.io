@@ -6,6 +6,8 @@ main:
     url: https://github.com/hantyou
   - title: "Posts"
     url: /year-archive/
+  - title: "About me"
+    url: /about/
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
