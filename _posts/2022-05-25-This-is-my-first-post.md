@@ -1,8 +1,8 @@
 ---
 title: "This is my real first post on testing all function"
 header:
-  image: /pictures/IMG_20210801_142533.jpg
-  caption: "Photo credit: myself"
+  image: /pictures/SK-C-211.jpg
+  caption: "Photo credit: to be added"
 categories:
   - my posts
 tags:
