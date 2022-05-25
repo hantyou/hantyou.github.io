@@ -1,8 +1,8 @@
 ---
 title: "Layout: Header Image (Horizontal)"
 header:
-  image: /assets/images/unsplash-image-1.jpg
-  caption: "Photo credit: [**Unsplash**](https://unsplash.com)"
+  image: /pictures/IMG_20210801_142533.jpg
+  caption: "Photo credit: myself"
 categories:
   - Layout
   - Uncategorized
