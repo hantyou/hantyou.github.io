@@ -4,6 +4,7 @@ header:
   teaser: /pictures/SK-C-211.jpg
   image: /pictures/SK-C-211.jpg
   caption: "Photo credit: to be added"
+  author_profile: true
 categories:
   - my posts
 tags:
