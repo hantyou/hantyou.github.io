@@ -92,11 +92,6 @@ cv:
         highlights:
           - "Proposed selective update strategy for robust background modeling"
           - "Implemented algorithm on Digital Signal Processor platforms"
-
-    Awards:
-
-    Publications:
-
     Skills:
       - name: Programming Languages & Tools
         level: Proficient
@@ -120,6 +115,8 @@ cv:
 
     Interests:
       - name: Research & Learning
+        icon: fa-solid fa-lightbulb
+        keywords: "Autonomous Vehicles, Sensor Fusion, Signal Processing, Machine Learning, Distributed Systems"
 
       - name: Hobbies
         icon: fa-solid fa-heart
