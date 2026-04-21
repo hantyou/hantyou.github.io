@@ -6,7 +6,7 @@ subtitle: <a href='https://www.tudelft.nl/'>Delft University of Technology</a>. 
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: my_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
     <p>Signal Processing Systems Group</p>
