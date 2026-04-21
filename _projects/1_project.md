@@ -1,81 +1,46 @@
 ---
 layout: page
-title: project 1
-description: with background image
-img: assets/img/12.jpg
+title: Signal processing for environment-aware radar (SPEAR)
+description: Distributed signal processing for connected automotive radar sensing.
+img: assets/img/spear.png
 importance: 1
 category: work
-related_publications: true
+related_papers:
+  - zhai2025spatial
+  - harraway2025accelerated
+  - zhai2026camera
+  - harraway2025computationally
+  - zhai2024sparsity
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+The SPEAR project studies signal processing for connected automotive radar systems.
+The goal is to exploit vehicular connectivity to improve perception in mixed traffic conditions where vehicles have different sensing capabilities.
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+## Project data
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+- Researchers: Geethu Joseph, Nitin Myers, Peiyuan Zhai, Rupam Chakraborty
+- Starting date: February 2023
+- Closing date: February 2027
+- Funding: 2000 kE; related to group 1000 kE
+- Sponsor: NXP, TKI
+- Partners: NXP
+- Contact: Geethu Joseph
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
+## Research themes
 
-You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
-Say you wanted to write a bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+- Digital mmWave radar waveform design and algorithms
+- Interference-aware distributed radar sensing
+- Multimodal sensing for automotive radar
+- Surface-aided radar sensing
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
+The project develops advanced signal processing methods for next-generation automotive radar.
+It focuses on distributed processing over the communication backbone network, so multiple sensors can cooperate instead of operating in isolation.
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+![SPEAR project](/assets/img/spear.png)
 
-{% raw %}
+## Summary
 
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
+In future automotive radar systems, multiple mmWave radars are networked to enable high-resolution localization and obstacle detection.
+SPEAR addresses the gap between current radar sensing and connected sensing infrastructure by developing advanced algorithms that make better use of available vehicles, sensors, and communication links.
 
-{% endraw %}
+The project is part of TU Delft's Signal Processing Systems research line on distributed autonomous sensing systems.

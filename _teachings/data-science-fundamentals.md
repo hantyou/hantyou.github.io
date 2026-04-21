@@ -5,6 +5,7 @@ description: This course covers the foundational aspects of data science, includ
 instructor: Prof. Data
 year: 2024
 term: Spring
+show_in_teaching: false
 location: Science Building, Room 202
 time: Mondays and Wednesdays, 2:00-3:30 PM
 course_id: data-science-fundamentals

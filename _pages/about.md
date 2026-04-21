@@ -30,6 +30,6 @@ latest_posts:
 
 I am a Ph.D. researcher in Electrical Engineering at Delft University of Technology, advised by Dr. Geethu Joseph. My research focuses on **autonomous perception and occupancy grid mapping** for autonomous vehicles, with emphasis on **sensor fusion** (radar-LiDAR) and **sparse Bayesian learning**.
 
-Previously, I completed my M.Sc. in Electrical Engineering at Delft (GPA: 8.32/10), where I researched **distributed Gaussian process learning** for multi-agent systems under the supervision of Dr. Raj Thilak Rajan. I also hold a B.Eng. in Information Engineering from Xi'an Jiaotong University (GPA: 86.44/100).
+Previously, I completed my M.Sc. in Electrical Engineering at Delft University of Technology, where I researched **distributed Gaussian process learning** for multi-agent systems under the supervision of Dr. Raj Thilak Rajan. I also hold a B.Eng. in Information Engineering from Xi'an Jiaotong University.
 
 My research interests include: convex/non-convex optimization, distributed signal processing, multi-agent systems, and deep learning applications to autonomous systems. I am proficient in Python, C/C++, MATLAB, and have experience with FPGA and Linux environments.

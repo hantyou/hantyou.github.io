@@ -2,7 +2,7 @@
 layout: page
 title: projects
 permalink: /projects/
-description: A growing collection of your cool projects.
+description: The following projects are a selection of my research works and collaborations.
 nav: true
 nav_order: 3
 display_categories: [work, fun]
@@ -17,7 +17,7 @@ horizontal: false
   <a id="{{ category }}" href=".#{{ category }}">
     <h2 class="category">{{ category }}</h2>
   </a>
-  {% assign categorized_projects = site.projects | where: "category", category %}
+  {% assign categorized_projects = site.projects | where: "category", category | where_exp: "project", "project.show_in_projects != false" %}
   {% assign sorted_projects = categorized_projects | sort: "importance" %}
   <!-- Generate cards for each project -->
   {% if page.horizontal %}
@@ -41,7 +41,8 @@ horizontal: false
 
 <!-- Display projects without categories -->
 
-{% assign sorted_projects = site.projects | sort: "importance" %}
+{% assign visible_projects = site.projects | where_exp: "project", "project.show_in_projects != false" %}
+{% assign sorted_projects = visible_projects | sort: "importance" %}
 
   <!-- Generate cards for each project -->
 
