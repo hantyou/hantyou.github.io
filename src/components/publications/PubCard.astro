@@ -160,8 +160,10 @@ const hiddenAuthorsId = `publication-${slugify(pub.title)}-${pub.year ?? "unknow
             ),
           )}
         </CardFooter>
-      )}
+    )}
   </div>
+
+  {previewable && <div data-publication-preview-drawer={pub.id}></div>}
 </Card>
 
 <style>

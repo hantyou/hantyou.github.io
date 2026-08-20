@@ -197,13 +197,6 @@ const publicationTypes = [
     </div>
 
     <aside class="publication-preview" aria-label="Publication preview">
-      <div class="publication-preview-empty" data-publication-preview-empty>
-        <p class="publication-preview-kicker">Quick view</p>
-        <p>
-          Hover, focus, or select a publication to see its research context and
-          links.
-        </p>
-      </div>
       {allPublicationsFlat.map((pub: ProcessedPublication) => (
         <article class="publication-preview-panel" data-publication-preview-panel={pub.id} hidden>
           <div class="publication-preview-header">
@@ -344,24 +337,44 @@ const publicationTypes = [
     const panels = [
       ...root.querySelectorAll<HTMLElement>("[data-publication-preview-panel]"),
     ]
-    const empty = root.querySelector<HTMLElement>(
-      "[data-publication-preview-empty]",
-    )
+    const preview = root.querySelector<HTMLElement>(".publication-preview")
     const supportsHover = window.matchMedia(
       "(hover: hover) and (pointer: fine)",
     ).matches
+    const externalPreviewQuery = window.matchMedia("(width >= 84rem)")
     let activeId: string | undefined
     let isPinned = false
 
-    function show(id: string, pin = false) {
+    function findVisibleCard(id: string) {
+      return cards.find(
+        (card) =>
+          card.dataset.publicationPreview === id && !card.closest("[hidden]"),
+      )
+    }
+
+    function placePanel(
+      panel: HTMLElement,
+      id: string,
+      sourceCard?: HTMLElement,
+    ) {
+      const drawer = sourceCard?.querySelector<HTMLElement>(
+        `[data-publication-preview-drawer="${id}"]`,
+      )
+      const destination = externalPreviewQuery.matches ? preview : drawer
+      if (destination && panel.parentElement !== destination) {
+        destination.append(panel)
+      }
+    }
+
+    function show(id: string, pin = false, sourceCard?: HTMLElement) {
       activeId = id
       if (pin) isPinned = true
       root.dataset.publicationPreviewPinned = String(isPinned)
-      panels.forEach(
-        (panel) =>
-          (panel.hidden = panel.dataset.publicationPreviewPanel !== id),
-      )
-      if (empty) empty.hidden = true
+      panels.forEach((panel) => {
+        const isActive = panel.dataset.publicationPreviewPanel === id
+        if (isActive) placePanel(panel, id, sourceCard ?? findVisibleCard(id))
+        panel.hidden = !isActive
+      })
     }
 
     function clear() {
@@ -369,7 +382,6 @@ const publicationTypes = [
       activeId = undefined
       root.dataset.publicationPreviewPinned = "false"
       panels.forEach((panel) => (panel.hidden = true))
-      if (empty) empty.hidden = false
     }
 
     function close() {
@@ -380,11 +392,9 @@ const publicationTypes = [
     cards.forEach((card) => {
       const id = card.dataset.publicationPreview
       if (!id) return
-      card.addEventListener("focusin", () => show(id))
+      card.addEventListener("focusin", () => show(id, false, card))
       if (supportsHover) {
-        card.addEventListener("mouseenter", () => {
-          if (!isPinned) show(id)
-        })
+        card.addEventListener("mouseenter", () => show(id, false, card))
       }
     })
 
@@ -394,10 +404,11 @@ const publicationTypes = [
         button.addEventListener("click", () => {
           const id = button.dataset.publicationPreviewPin
           if (!id) return
+          const card = button.closest<HTMLElement>("[data-publication-preview]")
           if (isPinned && activeId === id) {
             close()
           } else {
-            show(id, true)
+            show(id, true, card ?? undefined)
           }
         })
       })
@@ -408,7 +419,9 @@ const publicationTypes = [
         button.addEventListener("click", close)
       })
 
-    if (supportsHover) root.addEventListener("mouseleave", clear)
+    externalPreviewQuery.addEventListener("change", () => {
+      if (activeId) show(activeId, isPinned, findVisibleCard(activeId))
+    })
     root.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         event.preventDefault()
@@ -526,34 +539,20 @@ const publicationTypes = [
   }
 
   .publication-browse {
-    display: grid;
-    gap: var(--space-m);
+    min-inline-size: 0;
   }
 
   .publication-preview {
-    display: grid;
-    min-block-size: 17rem;
+    display: contents;
   }
 
-  .publication-preview-empty,
   .publication-preview-panel {
-    grid-area: 1 / 1;
-    align-self: start;
     padding: var(--space-m);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     background: color-mix(in oklab, var(--muted) 46%, var(--background));
   }
 
-  .publication-preview-empty {
-    display: grid;
-    align-content: center;
-    gap: var(--space-2xs);
-    min-block-size: 12rem;
-    color: var(--muted-foreground);
-  }
-
-  .publication-preview-empty p:last-child,
   .publication-preview-panel h2,
   .publication-preview-block p {
     margin: 0;
@@ -566,8 +565,7 @@ const publicationTypes = [
       var(--motion-ease);
   }
 
-  .publication-preview-panel[hidden],
-  .publication-preview-empty[hidden] {
+  .publication-preview-panel[hidden] {
     display: none;
   }
 
@@ -634,15 +632,43 @@ const publicationTypes = [
     place-items: center;
   }
 
-  @media (width >= 68rem) {
-    .publication-browse {
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.48fr);
-      align-items: start;
+  @media (width < 84rem) {
+    :global([data-publication-preview-drawer]) {
+      margin-block-start: calc(-1 * var(--space-2xs));
     }
 
+    :global([data-publication-preview-drawer] .publication-preview-panel) {
+      margin-block-start: var(--space-2xs);
+      border-inline: 0;
+      border-block-end: 0;
+      border-radius: 0;
+      background: color-mix(in oklab, var(--muted) 32%, var(--background));
+      animation-name: publication-preview-drawer-in;
+    }
+  }
+
+  @media (width >= 84rem) {
     .publication-preview {
-      position: sticky;
-      inset-block-start: calc(var(--header-height) + var(--space-s));
+      position: fixed;
+      z-index: 3;
+      display: block;
+      inset-block-start: calc(var(--header-height, 4rem) + var(--space-m));
+      inset-inline-start: calc(50% + (var(--measure) / 2) + var(--space-s));
+      inline-size: min(
+        20rem,
+        calc(50vw - (var(--measure) / 2) - (2 * var(--space-s)))
+      );
+    }
+
+    .publication-preview-panel {
+      max-block-size: calc(
+        100dvh -
+        var(--header-height, 4rem) -
+        (2 * var(--space-m))
+      );
+      overflow-y: auto;
+      box-shadow: 0 0.75rem 2rem
+        color-mix(in oklab, var(--foreground) 12%, transparent);
     }
   }
 
@@ -655,6 +681,18 @@ const publicationTypes = [
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes publication-preview-drawer-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.3rem) scaleY(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scaleY(1);
     }
   }
 
