@@ -135,6 +135,7 @@ const hiddenAuthorsId = `publication-${slugify(pub.title)}-${pub.year ?? "unknow
         label="BibTeX"
         title={`Copy BibTeX for “${pub.title}”`}
         variant="accent-outline"
+        class="publication-bibtex"
       />
 
       {pub.links.map(({ href, icon, label }) => (
@@ -193,6 +194,21 @@ const hiddenAuthorsId = `publication-${slugify(pub.title)}-${pub.year ?? "unknow
      uniform gap did. */
   .publication-body [data-slot="card-content"] {
     gap: var(--space-3xs);
+  }
+
+  .publication-card
+    :global(.publication-bibtex[data-copy-variant="accent-outline"]) {
+    border-color: color-mix(in oklab, var(--accent) 42%, var(--border));
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .publication-card
+      :global(.publication-bibtex[data-copy-variant="accent-outline"]):hover {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
   }
 
   .publication-media {
