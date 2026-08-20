@@ -32,12 +32,7 @@ replace its personal content with generic sample material.
   run:
 
 ```bash
-pnpm format:check
-pnpm lint
-pnpm lint:styles
-pnpm test:markdown
-pnpm astro check
-pnpm build
+pnpm verify
 ```
 
 - For visual changes, inspect desktop and mobile layouts as well as keyboard,

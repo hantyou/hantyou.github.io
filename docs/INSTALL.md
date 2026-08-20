@@ -26,17 +26,13 @@ configuration, components, or styles change.
 Run the following before publishing substantial changes:
 
 ```bash
-pnpm format:check
-pnpm lint
-pnpm lint:styles
-pnpm test:markdown
-pnpm astro check
-pnpm build
+pnpm verify
 ```
 
-`pnpm build` writes the static site to `dist/`; `pnpm preview` serves that build
-locally. Check the home page, publications, research projects, and any edited
-page in both light and dark modes.
+`pnpm verify` runs formatting, linting, Markdown tests, Astro diagnostics, and
+a production build. `pnpm build` writes the static site to `dist/`; `pnpm
+preview` serves that build locally. Check the home page, publications, research
+projects, and any edited page in both light and dark modes.
 
 ## Publish
 

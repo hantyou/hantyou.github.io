@@ -42,13 +42,12 @@ pnpm dev
 Open <http://localhost:4321>. Before publishing a change, run:
 
 ```bash
-pnpm format:check
-pnpm lint
-pnpm lint:styles
-pnpm test:markdown
-pnpm astro check
-pnpm build
+pnpm verify
 ```
+
+This runs formatting, linting, Markdown tests, Astro diagnostics, and a
+production build. It prints a concise pass result, or the failing check's
+output.
 
 Pushing to `main` deploys the production build through the GitHub Pages
 workflow in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).

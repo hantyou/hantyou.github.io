@@ -29,6 +29,7 @@ pnpm test:markdown
 pnpm astro check
 pnpm build
 pnpm preview
+pnpm verify
 ```
 
 ## Working principles
@@ -45,6 +46,6 @@ pnpm preview
 
 ## Before publishing
 
-Run the validation suite in the README, inspect the production build locally,
+Run `pnpm verify`, inspect the production build locally,
 then push to `main`. The GitHub Pages workflow builds the site and deploys it
 to the `gh-pages` branch.
