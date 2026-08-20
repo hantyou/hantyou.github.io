@@ -9,6 +9,17 @@ theme for academic personal sites, research blogs, projects, publications, and
 now pages. It is a static-first, Markdown-first starter with generic
 demonstration content that researchers can replace with their own work.
 
+## Origin and credits
+
+This personal website is a customized fork of
+[myscholar](https://github.com/mychiffonn/myscholar), the Astro Scholar template
+created by [My (Chiffon) Nguyen](https://github.com/mychiffonn). Its design and
+code provided the starting point for this site.
+
+The original project's [Apache-2.0 license](LICENSE), including its copyright
+notice, is retained in this repository. Additional upstream acknowledgements
+from the template are preserved in [Built With](#built-with) below.
+
 ## Previews
 
 | Home                                                | Projects                                                    |
