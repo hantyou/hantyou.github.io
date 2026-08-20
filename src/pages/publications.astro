@@ -395,6 +395,20 @@ const publicationTypes = [
       card.addEventListener("focusin", () => show(id, false, card))
       if (supportsHover) {
         card.addEventListener("mouseenter", () => show(id, false, card))
+      } else {
+        // Touch devices have no hover state. Let a tap on the card's empty
+        // area pin its inline preview; controls and links keep their own
+        // behavior.
+        card.addEventListener("click", (event) => {
+          const target = event.target as HTMLElement
+          if (target.closest("a, button, summary, input, select, textarea"))
+            return
+          if (isPinned && activeId === id) {
+            close()
+          } else {
+            show(id, true, card)
+          }
+        })
       }
     })
 
