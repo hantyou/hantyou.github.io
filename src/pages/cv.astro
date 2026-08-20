@@ -19,17 +19,7 @@ const pdfHref = withBase("/assets/pdf/peiyuan_zhai_cv.pdf")
     <CVContent />
   </prose-content>
 
-  <section class="cv-preview" aria-label="CV PDF preview">
-    <object
-      data={pdfHref}
-      type="application/pdf"
-      aria-label="Peiyuan Zhai curriculum vitae PDF"
-    >
-      <p>
-        The PDF preview is unavailable in this browser.
-        <a href={pdfHref}>Open the CV PDF</a>.
-      </p>
-    </object>
+  <div class="cv-document">
     <Button
       href={pdfHref}
       variant="primary"
@@ -41,13 +31,29 @@ const pdfHref = withBase("/assets/pdf/peiyuan_zhai_cv.pdf")
     >
       <Icon name="mingcute:pdf-line" title="Download CV as PDF" />
     </Button>
-  </section>
+    <section class="cv-preview" aria-label="CV PDF preview">
+      <object
+        data={pdfHref}
+        type="application/pdf"
+        aria-label="Peiyuan Zhai curriculum vitae PDF"
+      >
+        <p>
+          The PDF preview is unavailable in this browser.
+          <a href={pdfHref}>Open the CV PDF</a>.
+        </p>
+      </object>
+    </section>
+  </div>
 </CommonLayout>
 
 <style>
-  .cv-preview {
-    position: relative;
+  .cv-document {
+    display: grid;
+    gap: var(--space-xs);
     margin-block-start: var(--space-xl);
+  }
+
+  .cv-preview {
     min-block-size: 70rem;
     overflow: hidden;
     border: 1px solid var(--border);
@@ -64,10 +70,10 @@ const pdfHref = withBase("/assets/pdf/peiyuan_zhai_cv.pdf")
   }
 
   .cv-download-button {
-    position: absolute;
-    z-index: 1;
-    inset-block-start: var(--space-s);
-    inset-inline-end: var(--space-s);
+    position: sticky;
+    z-index: 2;
+    inset-block-start: calc(var(--header-height, 4rem) + var(--space-s));
+    justify-self: end;
     box-shadow: 0 0.35rem 1rem
       color-mix(in oklab, var(--foreground) 22%, transparent);
   }
@@ -77,16 +83,19 @@ const pdfHref = withBase("/assets/pdf/peiyuan_zhai_cv.pdf")
     block-size: 1.25rem;
   }
 
+  @media (width >= 60rem) {
+    .cv-download-button {
+      position: fixed;
+      inset-block-start: calc(var(--header-height, 4rem) + var(--space-m));
+      inset-inline-start: calc(50% + (var(--measure) / 2) + var(--space-s));
+    }
+  }
+
   @media (width < 40rem) {
     .cv-preview,
     .cv-preview object {
       min-block-size: 52rem;
       block-size: 52rem;
-    }
-
-    .cv-download-button {
-      inset-block-start: var(--space-xs);
-      inset-inline-end: var(--space-xs);
     }
   }
 </style>

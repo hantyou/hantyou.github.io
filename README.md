@@ -67,6 +67,14 @@ Then:
 To contribute to the theme itself, clone this repository and run
 `corepack enable && pnpm install`.
 
+## Managing your website without AI
+
+If you are maintaining this customized personal site, start with the
+[plain-language site-management guide](docs/SITE-MANAGEMENT.md). It explains
+which files to edit for your profile, CV, projects, publications, images, blog
+posts, local previewing, and publishing—without requiring programming or an AI
+assistant.
+
 ## Astro and AI-assisted development
 
 Astro's [Build with AI guide](https://docs.astro.build/en/guides/build-with-ai/)
