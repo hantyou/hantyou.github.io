@@ -343,7 +343,9 @@ const publicationTypes = [
     ).matches
     const externalPreviewQuery = window.matchMedia("(width >= 84rem)")
     let activeId: string | undefined
+    let activeSourceCard: HTMLElement | undefined
     let isPinned = false
+    let positionAnimationFrame: number | undefined
 
     function findVisibleCard(id: string) {
       return cards.find(
@@ -366,20 +368,65 @@ const publicationTypes = [
       }
     }
 
+    function updatePreviewPosition() {
+      positionAnimationFrame = undefined
+      if (!preview || !activeId || !externalPreviewQuery.matches) return
+
+      const sourceCard =
+        activeSourceCard?.isConnected && !activeSourceCard.closest("[hidden]")
+          ? activeSourceCard
+          : findVisibleCard(activeId)
+      const panel = panels.find(
+        (item) => item.dataset.publicationPreviewPanel === activeId,
+      )
+      if (!sourceCard || !panel || panel.hidden) return
+
+      const previewStyles = window.getComputedStyle(preview)
+      const rootStyles = window.getComputedStyle(document.documentElement)
+      const viewportInset = Number.parseFloat(
+        previewStyles.getPropertyValue("--publication-preview-viewport-inset"),
+      )
+      const headerHeight = Number.parseFloat(
+        rootStyles.getPropertyValue("--header-height"),
+      )
+      const inset = Number.isFinite(viewportInset) ? viewportInset : 16
+      const minimumTop =
+        (Number.isFinite(headerHeight) ? headerHeight : 64) + inset
+      const maximumTop = Math.max(
+        minimumTop,
+        window.innerHeight - inset - panel.offsetHeight,
+      )
+      const cardTop = sourceCard.getBoundingClientRect().top
+      const top = Math.min(Math.max(cardTop, minimumTop), maximumTop)
+
+      preview.style.insetBlockStart = `${top}px`
+    }
+
+    function schedulePreviewPosition() {
+      if (positionAnimationFrame !== undefined) return
+      positionAnimationFrame = window.requestAnimationFrame(
+        updatePreviewPosition,
+      )
+    }
+
     function show(id: string, pin = false, sourceCard?: HTMLElement) {
       activeId = id
+      activeSourceCard = sourceCard ?? findVisibleCard(id)
       if (pin) isPinned = true
       root.dataset.publicationPreviewPinned = String(isPinned)
       panels.forEach((panel) => {
         const isActive = panel.dataset.publicationPreviewPanel === id
-        if (isActive) placePanel(panel, id, sourceCard ?? findVisibleCard(id))
+        if (isActive) placePanel(panel, id, activeSourceCard)
         panel.hidden = !isActive
       })
+      schedulePreviewPosition()
     }
 
     function clear() {
       if (isPinned) return
       activeId = undefined
+      activeSourceCard = undefined
+      preview?.style.removeProperty("inset-block-start")
       root.dataset.publicationPreviewPinned = "false"
       panels.forEach((panel) => (panel.hidden = true))
     }
@@ -436,6 +483,10 @@ const publicationTypes = [
     externalPreviewQuery.addEventListener("change", () => {
       if (activeId) show(activeId, isPinned, findVisibleCard(activeId))
     })
+    window.addEventListener("scroll", schedulePreviewPosition, {
+      passive: true,
+    })
+    window.addEventListener("resize", schedulePreviewPosition)
     root.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         event.preventDefault()
@@ -663,15 +714,22 @@ const publicationTypes = [
 
   @media (width >= 84rem) {
     .publication-preview {
+      --publication-preview-viewport-inset: var(--space-m);
+
       position: fixed;
       z-index: 3;
       display: block;
-      inset-block-start: calc(var(--header-height, 4rem) + var(--space-m));
+      inset-block-start: calc(
+        var(--header-height, 4rem) +
+        var(--publication-preview-viewport-inset)
+      );
       inset-inline-start: calc(50% + (var(--measure) / 2) + var(--space-s));
       inline-size: min(
         20rem,
         calc(50vw - (var(--measure) / 2) - (2 * var(--space-s)))
       );
+      transition: inset-block-start var(--motion-duration-slow)
+        var(--motion-ease);
     }
 
     .publication-preview-panel {
@@ -711,8 +769,10 @@ const publicationTypes = [
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .publication-preview,
     .publication-preview-panel {
       animation-duration: 0.01ms;
+      transition-duration: 0.01ms;
     }
   }
 </style>
