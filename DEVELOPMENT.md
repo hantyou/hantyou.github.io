@@ -1,50 +1,19 @@
 # Development
 
-Astro Scholar is based on Astro Erudite v2 and keeps the same core direction:
-ship a fast, owned, Markdown-first static site with minimal client JavaScript and
-plain CSS that is easy to inspect.
-
-## Principles
-
-- Prefer native Astro, HTML, and CSS before adding framework islands.
-- Keep dependencies light. A small local component is often better than a UI
-  dependency for one widget.
-- Own theme primitives: colors, spacing, typography, shape, motion, and icons are
-  local tokens or local files.
-- Keep content schema-first. Validate author, project, blog, publication, and
-  profile data with Zod instead of allowing loosely shaped content.
-- Keep Markdown portable. Prefer `.md`, Sätteri plugins, directives, callouts,
-  math, and code transforms over MDX-only content.
-- Keep pages dense but readable. This is an academic/research site, not a
-  marketing landing page.
-- Preserve static output. Avoid client-side state unless the interaction clearly
-  needs it.
-
-The Erudite v2 article emphasizes measurable reductions in JavaScript, CSS,
-build time, dependencies, and main-thread work; removal of Tailwind, React UI
-dependencies, and MDX by default; native CSS tokens; local SVG ownership; and a
-Sätteri Markdown pipeline for callouts, links, headings, math, and code. Use
-those as the baseline when deciding whether a feature belongs in the theme.
-
-Reference: <https://astro-erudite.vercel.app/blog/introducing-v2>
+This repository is the source of Peiyuan Zhai's personal academic website. It
+is a static-first Astro site, not a general-purpose theme or starter.
 
 ## Project map
 
-- `astro.config.ts`: Astro, sitemap, image, server, and Markdown processor
-  configuration.
-- `src/site.config.ts`: user-facing site, profile, navigation, publication, and
-  footer config.
-- `src/content.config.ts`: content collection loaders and schemas.
-- `src/schemas.ts`: reusable config and content schema definitions.
-- `src/icon.config.ts`: semantic icons, profile icons, project link icons, and
-  publication link icons.
+- `src/site.config.ts`: website identity, navigation, profile, publications,
+  and footer configuration.
+- `src/content/`: editable research, publication, project, biography, and blog
+  content.
 - `src/pages/`: routes.
-- `src/layouts/`: shared page shells.
-- `src/components/`: UI components grouped by domain.
-- `src/lib/`: content processing and feature logic.
-- `src/styles/`: global CSS tokens and shared styling.
-- `src/content/`: user-editable content.
-- `public/`: static assets served from `/`.
+- `src/components/`: page and interface components.
+- `src/styles/`: shared design tokens and styling.
+- `public/`: static assets.
+- `astro.config.ts`: Astro, sitemap, image, and Markdown configuration.
 
 ## Commands
 
@@ -60,94 +29,22 @@ pnpm test:markdown
 pnpm astro check
 pnpm build
 pnpm preview
-pnpm clean
 ```
 
-Use `pnpm routine` for the standard pre-PR local pass.
+## Working principles
 
-## Development loop
+- Keep the site static and Markdown-first.
+- Prefer native Astro, HTML, and CSS over client-side JavaScript or additional
+  frameworks.
+- Keep profile, project, publication, and blog data valid against their content
+  schemas.
+- Use existing color, spacing, typography, shape, motion, card, and icon
+  primitives before introducing new styling systems.
+- Preserve the source attribution and licensing in the README and `LICENSE`.
+- Check both light and dark modes after visual changes.
 
-1. Read the nearest config and schema before editing behavior.
-2. Make the smallest content/schema/component change that satisfies the task.
-3. Run the narrowest useful check first.
-4. Run `pnpm routine` and `pnpm build` before a pull request.
-5. For visual changes, start `pnpm dev` and capture desktop and mobile
-   screenshots of affected pages.
+## Before publishing
 
-## Content rules
-
-- Blog files are Markdown collected from `src/content/blog`.
-- Blog subposts use a folder with `index.md` plus ordered child posts.
-- Project files are Markdown collected from `src/content/projects`, excluding
-  `README.md`.
-- People are defined in `src/content/people.toml`.
-- Experience is defined in `src/content/experience.json`.
-- Publications are loaded from BibTeX at `src/content/publications/main.bib`.
-
-Do not introduce MDX unless the feature genuinely needs component islands inside
-content. If MDX is needed, document the reason and update install/customization
-docs.
-
-## CSS rules
-
-- Use existing tokens from `src/styles/color.css`, `layout.css`,
-  `typography.css`, and `shape.css`.
-- Prefer component-scoped CSS in `.astro` files for one component's layout.
-- Put shared reusable styling in `src/styles/`.
-- Avoid Tailwind and utility-class systems unless the project direction changes.
-- Check light and dark modes for all color changes.
-
-## Icon rules
-
-- Prefer semantic icon names from `src/icon.config.ts` in app components.
-- Use local SVGs in `src/assets/icons/` for brand/tool icons that are part of the
-  theme.
-- Add Iconify sets only when they replace many local one-off assets or unlock a
-  coherent icon family.
-
-## Theme publishing checklist
-
-Minimum local project pieces:
-
-- `README.md` with demo image, features, install, customization, and deploy
-  links.
-- `docs/INSTALL.md` and `docs/CUSTOMIZATION.md`.
-- `DEVELOPMENT.md` and `CONTRIBUTING.md`.
-- `LICENSE`.
-- Useful package metadata: `description`, `keywords`, `license`, `repository`,
-  `bugs`, and `homepage`.
-- GitHub Actions CI.
-- GitHub issue and pull request templates.
-- One to four 1600×900 preview screenshots under `docs/assets/previews/`.
-
-Minimum GitHub settings:
-
-- Mark the repository as a template.
-- Add topics: `astro`, `astro-theme`, `astro-template`, `academic`, `blog`,
-  `portfolio`, `publications`, `research`.
-- Enable Issues.
-- Protect `main` with CI required before merge.
-- Add a deployed demo URL in the repository sidebar.
-
-Recommended repository split:
-
-- Template repo: clean sample content and docs.
-- Demo repo: deployed fresh copy that proves the template works without personal
-  private content.
-
-Astro theme directory submission:
-
-1. Sign in to the [Astro developer portal](https://portal.astro.build/themes/submit)
-   with GitHub.
-2. Submit the theme name, short description, full description, repository URL,
-   live demo URL, pricing (`Free`), categories (`Portfolio` and `Blog`), and
-   technology (`TypeScript`).
-3. Upload `docs/assets/previews/home.png` as the primary 16:9 image, then add up
-   to three gallery images: `projects.png`, `publications.png`, and `uses.png`.
-4. Confirm that the public repository and live demo work without authentication
-   before submitting for approval. Publish at least one non-draft demo post so
-   the `Blog` category is represented in the live demo.
-
-The Astro catalog renders cards at a 16:9 ratio and supports a primary image plus
-additional gallery images. Re-capture the previews after material visual
-changes; do not submit the tall full-page README captures.
+Run the validation suite in the README, inspect the production build locally,
+then push to `main`. The GitHub Pages workflow builds the site and deploys it
+to the `gh-pages` branch.

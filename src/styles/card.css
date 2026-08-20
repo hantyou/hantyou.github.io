@@ -69,6 +69,14 @@
   --card-gap: var(--space-2xs);
 }
 
+/* At intermediate widths, image-bearing publication cards use two grid
+   columns. Their quick-view drawer must span the entire next row. */
+@media (width >= 52rem) and (width < 84rem) {
+  .publication-card[data-has-image="true"] > [data-publication-preview-drawer] {
+    grid-column: 1 / -1;
+  }
+}
+
 [data-slot="card"][data-clickable] {
   cursor: pointer;
 }

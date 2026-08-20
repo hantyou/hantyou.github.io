@@ -2,9 +2,8 @@
 
 ## Celestial visual direction
 
-Add a dreamy, celestial atmosphere inspired by the Astro Scholar 2.1 release
-artwork without changing the theme's core color, typography, spacing, or shape
-tokens.
+Add a dreamy, celestial atmosphere to this website without changing its core
+color, typography, spacing, or shape tokens.
 
 ### Design principles
 

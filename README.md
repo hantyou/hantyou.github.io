@@ -1,125 +1,45 @@
-# Astro Scholar
+# Peiyuan Zhai's website
 
-[![Version](https://img.shields.io/badge/version-v2.1.0-blue?style=for-the-badge)](https://github.com/mychiffonn/astro-scholar/releases) [![Astro 7](https://img.shields.io/badge/Astro_7-BC52EE?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build) [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+This repository contains the source for [Peiyuan Zhai's personal academic
+website](https://slipzhai.cc/zhai): a PhD researcher at Delft University of
+Technology working on autonomous perception, sensor fusion, and Bayesian
+learning.
 
-![Astro Scholar social preview](public/img/social-preview.png)
+The site presents research projects, publications, teaching, a CV, and
+occasional writing. It is a static Astro site whose content is primarily kept
+in Markdown, JSON, TOML, and BibTeX files.
 
-Astro Scholar is an [Astro](https://docs.astro.build/en/concepts/why-astro/)
-theme for academic personal sites, research blogs, projects, publications, and
-now pages. It is a static-first, Markdown-first starter with generic
-demonstration content that researchers can replace with their own work.
+## How this site differs from its source project
 
-## Origin and credits
+This is a maintained personal website rather than a reusable theme. Its content,
+site configuration, navigation, assets, and GitHub Pages deployment are tailored
+to Peiyuan Zhai's research and professional profile. Instructions for creating,
+contributing to, or publishing a general Astro theme have been removed.
 
-This personal website is a customized fork of
-[myscholar](https://github.com/mychiffonn/myscholar), the Astro Scholar template
-created by [My (Chiffon) Nguyen](https://github.com/mychiffonn). Its design and
-code provided the starting point for this site.
+## Repository guide
 
-The original project's [Apache-2.0 license](LICENSE), including its copyright
-notice, is retained in this repository. Additional upstream acknowledgements
-from the template are preserved in [Built With](#built-with) below.
+- `src/content/`: website content, including the about page, blog posts,
+  projects, experience, people, and publications.
+- `src/site.config.ts`: site identity, navigation, profile links, and footer
+  configuration.
+- `src/pages/` and `src/components/`: Astro routes and presentation components.
+- `public/`: static assets, including documents, fonts, favicons, and images.
 
-## Previews
+For practical content and configuration guidance, see
+[docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md). Development commands and
+project conventions are collected in [DEVELOPMENT.md](DEVELOPMENT.md).
 
-| Home                                                | Projects                                                    |
-| --------------------------------------------------- | ----------------------------------------------------------- |
-| ![Home page preview](docs/assets/previews/home.png) | ![Projects page preview](docs/assets/previews/projects.png) |
+## Work on the site locally
 
-| Publications                                                        | Uses                                                |
-| ------------------------------------------------------------------- | --------------------------------------------------- |
-| ![Publications page preview](docs/assets/previews/publications.png) | ![Uses page preview](docs/assets/previews/uses.png) |
-
-| Blog index (light)                                               | Blog post (light)                                                    |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------- |
-| ![Blog index in light mode](docs/assets/previews/blog-light.png) | ![Blog post in light mode](docs/assets/previews/blog-post-light.png) |
-
-| Blog index (dark)                                              | Blog post (dark)                                                   |
-| -------------------------------------------------------------- | ------------------------------------------------------------------ |
-| ![Blog index in dark mode](docs/assets/previews/blog-dark.png) | ![Blog post in dark mode](docs/assets/previews/blog-post-dark.png) |
-
-## Features
-
-- Astro 7 with a static-first, content-focused build and support for Astro's
-  integration ecosystem.
-- Academic profile, projects, updates, blog posts, authors, and publications.
-- SEO-included: sitemap, robots.txt, Open Graph metadata, and generated social images.
-- Publications rendered from a BibTeX file.
-- Markdown-first writing with Sätteri, callouts, math, code highlighting, heading
-  anchors, and sidenotes.
-- Blog post/subpost system with tags, stages, table of contents, share actions,
-  and multiple authors.
-- Native CSS with little interaction scripts shipped.
-- Local and Iconify-backed SVG icon system.
-- Type-safe config and content schemas with Zod.
-
-## Getting Started
-
-Have Node.js `>=22.12.0` and pnpm installed. Create a site directly from the
-GitHub starter:
+This project uses Node.js `>=22.12.0` and pnpm.
 
 ```bash
-pnpm create astro@latest --template mychiffonn/astro-scholar
+corepack enable
+pnpm install
+pnpm dev
 ```
 
-Astro's wizard asks for the destination, installs dependencies, and can
-initialize Git. See Astro's official
-[install and starter-template guide](https://docs.astro.build/en/install-and-setup/#use-a-theme-or-starter-template)
-for branch and repository URL options.
-
-Then:
-
-1. Start the development server with `pnpm dev`.
-2. Visit <http://localhost:4321>.
-3. Follow [docs/INSTALL.md](docs/INSTALL.md) to configure the starter.
-4. Personalize content and design with
-   [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md).
-
-To contribute to the theme itself, clone this repository and run
-`corepack enable && pnpm install`.
-
-## Managing your website without AI
-
-If you are maintaining this customized personal site, start with the
-[plain-language site-management guide](docs/SITE-MANAGEMENT.md). It explains
-which files to edit for your profile, CV, projects, publications, images, blog
-posts, local previewing, and publishing—without requiring programming or an AI
-assistant.
-
-## Astro and AI-assisted development
-
-Astro's [Build with AI guide](https://docs.astro.build/en/guides/build-with-ai/)
-explains how to give coding agents current Astro documentation instead of
-relying on potentially stale framework knowledge. This repository also includes
-[AGENTS.md](AGENTS.md) with the theme's installation, customization,
-development, validation, and publishing conventions.
-
-For supported adapters and integrations, use Astro's setup command:
-
-```bash
-pnpm astro add <integration>
-```
-
-The command installs the package and updates `astro.config.ts`. Read the
-[Astro integrations guide](https://docs.astro.build/en/guides/integrations/)
-and the selected integration's documentation first; the theme does not require
-a UI framework or server adapter for its default static build.
-
-## Built With
-
-This theme is built on enscribe's
-[astro-erudite](https://github.com/jktrn/astro-erudite) v2.0.1, and references
-from [Maggie Appleton](https://github.com/MaggieAppleton/maggieappleton.com-V3)'s
-digital garden and al-folio.
-
-## Development
-
-- [DEVELOPMENT.md](DEVELOPMENT.md): architecture, commands, Erudite v2
-  principles, and theme publishing checklist.
-- [CONTRIBUTING.md](CONTRIBUTING.md): contribution workflow and pull request
-  expectations.
-
-Common checks:
+Open <http://localhost:4321>. Before publishing a change, run:
 
 ```bash
 pnpm format:check
@@ -129,3 +49,22 @@ pnpm test:markdown
 pnpm astro check
 pnpm build
 ```
+
+Pushing to `main` deploys the production build through the GitHub Pages
+workflow in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+## Origin and credits
+
+This website is a customized fork of
+[myscholar](https://github.com/mychiffonn/myscholar), the Astro Scholar template
+created by [My (Chiffon) Nguyen](https://github.com/mychiffonn). The template's
+design and code provided the starting point for this site; the content,
+structure, and research presentation here are specific to Peiyuan Zhai.
+
+Astro Scholar is built on
+[astro-erudite](https://github.com/jktrn/astro-erudite) and acknowledges
+influences from [Maggie Appleton's digital garden](https://github.com/MaggieAppleton/maggieappleton.com-V3)
+and [al-folio](https://github.com/alshedivat/al-folio). The original
+[Apache-2.0 license](LICENSE) and its copyright notice are retained in this
+repository. Unless otherwise stated, website content is licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

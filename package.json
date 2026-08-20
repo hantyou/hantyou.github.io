@@ -1,27 +1,23 @@
 {
-  "name": "astro-scholar",
-  "description": "A fast Astro theme for academic personal sites, research blogs, projects, and publications.",
+  "name": "peiyuan-zhai-website",
+  "description": "Peiyuan Zhai's personal academic website, built with Astro.",
   "type": "module",
-  "version": "2.1.0",
+  "private": true,
   "license": "Apache-2.0",
-  "author": "My (Chiffon) Nguyen",
+  "author": "Peiyuan Zhai",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mychiffonn/astro-scholar.git"
+    "url": "git+https://github.com/hantyou/hantyou.github.io.git"
   },
   "bugs": {
-    "url": "https://github.com/mychiffonn/astro-scholar/issues"
+    "url": "https://github.com/hantyou/hantyou.github.io/issues"
   },
-  "homepage": "https://github.com/mychiffonn/astro-scholar#readme",
+  "homepage": "https://slipzhai.cc/zhai",
   "keywords": [
     "astro",
-    "astro-theme",
-    "astro-template",
-    "academic",
-    "blog",
-    "portfolio",
-    "publications",
-    "research"
+    "personal-website",
+    "academic-website",
+    "research-portfolio"
   ],
   "engines": {
     "node": ">=22.12.0"
