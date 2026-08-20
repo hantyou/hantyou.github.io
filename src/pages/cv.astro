@@ -1,0 +1,92 @@
+---
+import CommonLayout from "@/layouts/CommonLayout.astro"
+import Button from "@/components/base/Button.astro"
+import Icon from "@/components/base/Icon.astro"
+import { withBase } from "@/lib/links"
+import { Content as CVContent } from "@/content/cv.md"
+
+const description =
+  "Curriculum vitae of Peiyuan Zhai, PhD researcher at Delft University of Technology."
+const pdfHref = withBase("/assets/pdf/peiyuan_zhai_cv.pdf")
+---
+
+<CommonLayout
+  title="CV"
+  description={description}
+  breadcrumbs={[{ label: "CV", icon: "file" }]}
+>
+  <prose-content>
+    <CVContent />
+  </prose-content>
+
+  <section class="cv-preview" aria-label="CV PDF preview">
+    <object
+      data={pdfHref}
+      type="application/pdf"
+      aria-label="Peiyuan Zhai curriculum vitae PDF"
+    >
+      <p>
+        The PDF preview is unavailable in this browser.
+        <a href={pdfHref}>Open the CV PDF</a>.
+      </p>
+    </object>
+    <Button
+      href={pdfHref}
+      variant="primary"
+      size="square"
+      class="cv-download-button"
+      download
+      aria-label="Download CV as PDF"
+      title="Download CV as PDF"
+    >
+      <Icon name="mingcute:pdf-line" title="Download CV as PDF" />
+    </Button>
+  </section>
+</CommonLayout>
+
+<style>
+  .cv-preview {
+    position: relative;
+    margin-block-start: var(--space-xl);
+    min-block-size: 70rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+  }
+
+  .cv-preview object {
+    display: block;
+    inline-size: 100%;
+    block-size: 70rem;
+    border: 0;
+    background: white;
+  }
+
+  .cv-download-button {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: var(--space-s);
+    inset-inline-end: var(--space-s);
+    box-shadow: 0 0.35rem 1rem
+      color-mix(in oklab, var(--foreground) 22%, transparent);
+  }
+
+  .cv-download-button :global(svg) {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  @media (width < 40rem) {
+    .cv-preview,
+    .cv-preview object {
+      min-block-size: 52rem;
+      block-size: 52rem;
+    }
+
+    .cv-download-button {
+      inset-block-start: var(--space-xs);
+      inset-inline-end: var(--space-xs);
+    }
+  }
+</style>

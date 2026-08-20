@@ -1,81 +1,111 @@
-# Agent Guidelines for al-folio
+# Astro Scholar Agent Guide
 
-A simple, clean, and responsive Jekyll theme for academics.
+This repository is an Astro theme for academic portfolios and research blogs.
+Preserve its static-first, Markdown-first design and keep it reusable beyond the
+sample personal site.
 
-## Quick Links by Role
+## Installation
 
-- **Are you a coding agent?** → Read [`.github/copilot-instructions.md`](.github/copilot-instructions.md) first (tech stack, build, CI/CD, common pitfalls & solutions)
-- **Customizing the site?** → See [`.github/agents/customize.agent.md`](.github/agents/customize.agent.md)
-- **Writing documentation?** → See [`.github/agents/docs.agent.md`](.github/agents/docs.agent.md)
-- **Need setup/deployment help?** → [INSTALL.md](INSTALL.md)
-- **Troubleshooting & FAQ?** → [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **Customization & theming?** → [CUSTOMIZE.md](CUSTOMIZE.md)
-- **Quick 5-min start?** → [QUICKSTART.md](QUICKSTART.md)
-
-## Essential Commands
-
-### Local Development (Docker)
-
-The recommended approach is using Docker.
+- Read `package.json`, `astro.config.ts`, and `docs/INSTALL.md` before changing
+  dependencies, scripts, adapters, or deployment behavior.
+- Use Node.js `>=22.12.0` and pnpm because the repository has a
+  `pnpm-lock.yaml`.
+- For a new site, follow Astro's
+  [starter-template instructions](https://docs.astro.build/en/install-and-setup/#use-a-theme-or-starter-template)
+  and run:
 
 ```bash
-# Initial setup & start dev server
-docker compose pull && docker compose up
-# Site runs at http://localhost:8080
-
-# Rebuild after changing dependencies or Dockerfile
-docker compose up --build
-
-# Stop containers and free port 8080
-docker compose down
+pnpm create astro@latest --template mychiffonn/astro-scholar
 ```
 
-### Pre-Commit Checklist
+- Prefer Astro's native commands and integrations over hand-written setup
+  instructions.
+- Keep the default output static. Add a server adapter only when a requested
+  feature requires on-demand rendering.
 
-Before every commit, you **must** run these steps:
+## Current Astro guidance
 
-1.  **Format Code:**
-    ```bash
-    # (First time only)
-    npm install --save-dev prettier @shopify/prettier-plugin-liquid
-    # Format all files
-    npx prettier . --write
-    ```
-2.  **Build Locally & Verify:**
+- Astro APIs and integrations change. Consult Astro's
+  [Build with AI guide](https://docs.astro.build/en/guides/build-with-ai/) and
+  current documentation before relying on model memory.
+- When MCP is available, connect the official Astro Docs server at
+  `https://mcp.docs.astro.build/mcp` so agents can retrieve current framework
+  documentation.
+- Before adding an integration, read Astro's
+  [integrations guide](https://docs.astro.build/en/guides/integrations/) and the
+  integration's own documentation.
+- Use `pnpm astro add <integration>` for supported integrations. The command
+  installs dependencies and updates `astro.config.ts`; some community
+  integrations still require manual configuration.
+- Do not add a framework integration or server adapter unless the requested
+  feature needs it.
 
-    ```bash
-    # Rebuild the site
-    docker compose up --build
+## Customization
 
-    # Verify by visiting http://localhost:8080.
-    # Check navigation, pages, images, and dark mode.
-    ```
+- Read `docs/CUSTOMIZATION.md`, `src/site.config.ts`, `src/content.config.ts`,
+  and the relevant schema before editing user-facing configuration or content.
+- Treat `src/site.config.ts`, `src/content/`, `src/assets/`, and `public/` as the
+  primary customization surfaces.
+- Preserve content collection validation and useful schema errors.
+- Reuse existing color, typography, spacing, shape, motion, card, button, and
+  disclosure primitives before introducing new styles.
+- Check both light and dark modes after visual changes.
 
-## Critical Configuration
+## Blog: Writing in Markdown
 
-When modifying `_config.yml`, these **must be updated together**:
+- Blog entries live in `src/content/blog/`; a folder with `index.md` and child
+  posts creates a post/subpost series.
+- Use Markdown rather than MDX unless interactive components inside prose are
+  essential.
+- The configured Sätteri pipeline supports GFM, directives and callouts,
+  LaTeX-style math rendered by Temml, wikilinks, code highlighting, heading
+  anchors, external links, and sidenotes.
+- Keep demo content public, reusable, and free of private personal information.
+- Supply descriptive image alt text and valid author references.
 
-- **Personal site:** `url: https://username.github.io` + `baseurl:` (empty)
-- **Project site:** `url: https://username.github.io` + `baseurl: /repo-name/`
-- **YAML errors:** Quote strings with special characters: `title: "My: Cool Site"`
+## Development and build
 
-## Development Workflow
+- Read `DEVELOPMENT.md` and follow nearby component patterns.
+- Prefer native Astro, semantic HTML, and native CSS before adding client-side
+  JavaScript or a UI framework.
+- Keep functions and components single-purpose.
+- Preserve existing user changes in a dirty worktree and avoid unrelated
+  rewrites.
+- Do not add hardcoded secrets, debug output, commented-out code, or AI
+  attribution.
 
-- **Git & Commits:** For commit message format and Git practices, see [.github/GIT_WORKFLOW.md](.github/GIT_WORKFLOW.md).
-- **Code-Specific Instructions:** Consult the relevant instruction file for your code type.
+## Formatting, linting, and validation
 
-| File Type                                     | Instruction File                                                                                |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Markdown content (`_posts/`, `_pages/`, etc.) | [markdown-content.instructions.md](.github/instructions/markdown-content.instructions.md)       |
-| YAML config (`_config.yml`, `_data/`)         | [yaml-configuration.instructions.md](.github/instructions/yaml-configuration.instructions.md)   |
-| BibTeX (`_bibliography/`)                     | [bibtex-bibliography.instructions.md](.github/instructions/bibtex-bibliography.instructions.md) |
-| Liquid templates (`_includes/`, `_layouts/`)  | [liquid-templates.instructions.md](.github/instructions/liquid-templates.instructions.md)       |
-| JavaScript (`_scripts/`)                      | [javascript-scripts.instructions.md](.github/instructions/javascript-scripts.instructions.md)   |
+- Biome is the formatter for Astro, JavaScript, TypeScript, CSS, JSON, and other
+  supported repository files.
+- oxlint is the JavaScript and TypeScript linter. It complements Biome; the
+  Biome linter is intentionally disabled.
+- `pnpm lint:styles` enforces the repository's small set of CSS architecture
+  invariants that neither formatter nor oxlint covers.
+- Format touched files, then run the narrowest relevant check. Before handoff,
+  run:
 
-## Common Issues
+```bash
+pnpm format:check
+pnpm lint
+pnpm lint:styles
+pnpm test:markdown
+pnpm astro check
+pnpm build
+```
 
-For troubleshooting, see:
+- For visual work, inspect the affected pages at desktop and mobile widths and
+  verify keyboard, hover, focus, light, and dark states as applicable.
 
-- [Common Pitfalls & Workarounds](.github/copilot-instructions.md#common-pitfalls--workarounds) in copilot-instructions.md
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions
-- [GitHub Issues](https://github.com/alshedivat/al-folio/issues) to search for your specific problem.
+## Publishing
+
+- Read the theme checklist in `DEVELOPMENT.md` before a release or Astro theme
+  directory submission.
+- Keep `package.json`, the README version badge, screenshots, and release post
+  aligned with the release version.
+- Run the complete validation suite and inspect the production build in both
+  color modes.
+- Do not commit generated output from `dist/`, `.astro/`, `.playwright-cli/`,
+  or `output/`.
+- Use one to four 1600×900 desktop previews for the Astro theme directory; do
+  not substitute tall full-page captures.

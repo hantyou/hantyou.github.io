@@ -1,0 +1,22 @@
+{
+  "description": "Research tools and methods used in my work.",
+  "groups": [
+    {
+      "name": "Programming and systems",
+      "icon": "mingcute:code-line",
+      "items": ["Python", "C/C++", "MATLAB", "Linux", "Git", "LaTeX", "FPGA"]
+    },
+    {
+      "name": "Research focus",
+      "icon": "mingcute:microscope-line",
+      "items": [
+        "Autonomous perception",
+        "Sensor fusion",
+        "Sparse Bayesian learning",
+        "Distributed signal processing",
+        "Gaussian processes",
+        "Multi-agent systems"
+      ]
+    }
+  ]
+}

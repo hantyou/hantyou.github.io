@@ -1,0 +1,467 @@
+---
+import { FOOTER, PROFILE } from "@site-config"
+import techStack from "@/content/tech-stack.json"
+import { formatCount } from "@/lib/plural"
+import { getProjectSkillCounts, getProjects } from "@/lib/projects"
+import CommonLayout from "@/layouts/CommonLayout.astro"
+import Button from "@/components/base/Button.astro"
+import Icon from "@/components/base/Icon.astro"
+import TaxonomyChip from "@/components/base/TaxonomyChip.astro"
+import Section from "@/components/layout/Section.astro"
+import GithubActivity from "@/components/projects/GithubActivity.astro"
+import GithubCard from "@/components/projects/GithubCard.astro"
+import ProjectRow from "@/components/projects/ProjectRow.astro"
+import ResearchTimeline from "@/components/research/ResearchTimeline.astro"
+import TechStack from "@/components/projects/TechStack.astro"
+
+import "@/styles/chip-filter.css"
+
+const allProjects = await getProjects()
+const spearProject = allProjects.find((project) => project.id === "spear")
+const spearResearchProjects = allProjects
+  .filter((project) => project.data.parentProject === "spear")
+  .sort((a, b) => (a.data.timelineOrder ?? 0) - (b.data.timelineOrder ?? 0))
+const otherProjects = allProjects.filter(
+  (project) => project.id !== "spear" && project.data.parentProject !== "spear",
+)
+const skillCounts = getProjectSkillCounts(otherProjects, 1)
+const recurringSkillCounts = skillCounts.filter(({ count }) => count > 1)
+const uniqueSkillCounts = skillCounts.filter(({ count }) => count === 1)
+
+const githubRepo = FOOTER.sourceCode
+const githubProfile =
+  typeof PROFILE.links.github === "object"
+    ? PROFILE.links.github?.href
+    : PROFILE.links.github
+const githubUsername = githubProfile?.replace(/\/$/, "").split("/").pop()
+---
+
+<CommonLayout
+  title="Research"
+  description="Research projects in autonomous perception, multimodal sensing, and distributed signal processing."
+  prose={false}
+  breadcrumbs={[{ label: "Research", icon: "research" }]}
+  celestial
+>
+  <div class="projects-page">
+    {spearProject && (
+        <section class="research-overview" aria-labelledby="spear-overview-title">
+          <div class="research-overview-copy">
+            <p class="research-eyebrow">PhD research project · 2023–2027</p>
+            <h2 id="spear-overview-title">{spearProject.data.title}</h2>
+            <p>{spearProject.data.description}</p>
+            <p>
+              My work sits within the <strong>multimodal sensing for automotive radar</strong> sub-project, connecting complementary sensors with radar-centric occupancy-grid mapping.
+            </p>
+            <Button href={`/projects/${spearProject.id}`} variant="primary">Explore SPEAR</Button>
+          </div>
+          <div class="research-map" aria-label="SPEAR research relationship map">
+            <div class="research-map-root">
+              <span>Umbrella project</span>
+              <strong>SPEAR</strong>
+            </div>
+            <div class="research-map-line" aria-hidden="true"></div>
+            <div class="research-map-branch">
+              <span>My PhD sub-project</span>
+              <strong>Multimodal sensing for automotive radar</strong>
+              <small>Camera · LiDAR · Radar · occupancy mapping</small>
+            </div>
+          </div>
+        </section>
+      )}
+
+    {spearResearchProjects.length > 0 && <ResearchTimeline projects={spearResearchProjects} />}
+
+    {githubProfile && <GithubActivity githubUrl={githubProfile} />}
+    {otherProjects.length > 0 && <div class="projects-list-wrapper">
+      <div class="other-research-heading">
+        <p class="research-eyebrow">Earlier work and research software</p>
+        <h2>Other research</h2>
+      </div>
+      {skillCounts.length > 0 && (
+          <div
+            class="project-filters"
+            role="group"
+            aria-labelledby="project-skill-filter-label"
+          >
+            <span class="project-filter-label" id="project-skill-filter-label">
+              Skill
+            </span>
+            <div class="project-skill-controls">
+              <div class="chip-filter-bar">
+                {recurringSkillCounts.map(({ slug, label, count }) => (
+                  <TaxonomyChip
+                    label={label}
+                    count={count}
+                    countNoun="project"
+                    data-project-skill-filter={slug}
+                    aria-pressed="false"
+                    aria-label={`Filter projects by skill ${label}; ${formatCount(count, "project")}`}
+                  />
+                ))}
+                <span class="chip-active-filter" data-active-filter hidden>
+                  <TaxonomyChip
+                    label="Clear filter"
+                    prefix="×"
+                    tone="destructive"
+                    data-clear-project-filters
+                    aria-label="Clear project filter"
+                  />
+                </span>
+              </div>
+              {uniqueSkillCounts.length > 0 && (
+                <details class="project-skill-more" data-disclosure>
+                  <summary>
+                    <span data-skill-more-show>
+                      Show {formatCount(uniqueSkillCounts.length, "more skill")}
+                    </span>
+                    <span data-skill-more-hide>Hide additional skills</span>
+                    <span data-disclosure-chevron>
+                      <Icon name="chevron-down" />
+                    </span>
+                  </summary>
+                  <div class="chip-filter-bar project-skill-more-chips">
+                    {uniqueSkillCounts.map(({ slug, label, count }) => (
+                      <TaxonomyChip
+                        label={label}
+                        count={count}
+                        countNoun="project"
+                        data-project-skill-filter={slug}
+                        aria-pressed="false"
+                        aria-label={`Filter projects by skill ${label}; ${formatCount(count, "project")}`}
+                      />
+                    ))}
+                  </div>
+                </details>
+              )}
+            </div>
+            <span
+              class="sr-only"
+              aria-live="polite"
+              aria-atomic="true"
+              data-project-filter-status
+            />
+          </div>
+        )}
+
+      <div class="project-filter-empty" data-project-filter-empty hidden>
+        <h2>No matching projects</h2>
+        <p>Try clearing the skill filter.</p>
+      </div>
+
+      <div class="project-list">
+        {otherProjects.map((project) => <ProjectRow {project} />)}
+      </div>
+    </div>}
+
+    <Section title="Tech Stack" class="tech-stack-section">
+      <TechStack {...techStack} />
+    </Section>
+    {githubRepo && (
+        <Section title="On GitHub" class="github-showcase">
+          <GithubCard repo={githubRepo} contributor={githubUsername} />
+        </Section>
+      )}
+  </div>
+</CommonLayout>
+
+<script>
+  import { initFacetedChipFilter } from "@/lib/chip-filter"
+
+  function initProjectControls() {
+    // astro:page-load and astro:after-swap both fire per navigation; skip the
+    // second call so we don't double-bind listeners on this DOM instance.
+    // Anchor the flag to a swapped-in element (not document.body, which
+    // persists across navigations) so it resets on the next real navigation.
+    const anchor = document.querySelector<HTMLElement>(".projects-page")
+    if (!anchor || anchor.dataset.controlsInitialized === "true") return
+    anchor.dataset.controlsInitialized = "true"
+
+    initFacetedChipFilter({
+      itemSelector: "[data-project-skills]",
+      facets: [
+        {
+          key: "skill",
+          itemAttr: "projectSkills",
+          filterButtonSelector: "[data-project-skill-filter]",
+          filterButtonAttr: "projectSkillFilter",
+        },
+      ],
+      clearButtonSelector: "[data-clear-project-filters]",
+      activeIndicatorSelector: "[data-active-filter]",
+      statusSelector: "[data-project-filter-status]",
+      emptyStateSelector: "[data-project-filter-empty]",
+      resultNoun: "project",
+    })
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProjectControls, {
+      once: true,
+    })
+  } else {
+    initProjectControls()
+  }
+  document.addEventListener("astro:page-load", initProjectControls)
+  document.addEventListener("astro:after-swap", initProjectControls)
+</script>
+
+<style>
+  .projects-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .research-overview {
+    display: grid;
+    gap: var(--space-l);
+    padding: var(--space-l);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(
+        145deg,
+        color-mix(in oklab, var(--primary) 9%, transparent),
+        transparent 52%
+      ),
+      var(--background);
+  }
+
+  .research-overview-copy,
+  .other-research-heading {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .research-overview-copy h2,
+  .other-research-heading h2,
+  .research-overview-copy p {
+    margin: 0;
+  }
+
+  .research-overview-copy h2 {
+    font-size: var(--step-2);
+  }
+
+  .research-overview-copy p:not(.research-eyebrow) {
+    color: var(--muted-foreground);
+    line-height: 1.55;
+  }
+
+  .research-eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-size: var(--step--2);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .research-overview-copy [data-button] {
+    justify-self: start;
+    margin-block-start: var(--space-2xs);
+  }
+
+  .research-map {
+    display: grid;
+    align-content: center;
+    gap: var(--space-xs);
+  }
+
+  .research-map-root,
+  .research-map-branch {
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--space-s);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--background) 88%, transparent);
+  }
+
+  .research-map-root {
+    justify-self: start;
+  }
+
+  .research-map-branch {
+    max-inline-size: 24rem;
+    margin-inline-start: var(--space-l);
+    border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+  }
+
+  .research-map span,
+  .research-map small {
+    color: var(--muted-foreground);
+    font-size: var(--step--2);
+  }
+
+  .research-map strong {
+    font-size: var(--step-0);
+  }
+
+  .research-map-line {
+    position: relative;
+    block-size: var(--space-s);
+    margin-inline-start: var(--space-s);
+    border-inline-start: 1px solid
+      color-mix(in oklab, var(--primary) 45%, var(--border));
+  }
+
+  .research-map-line::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: var(--space-m);
+    block-size: 1px;
+    background: color-mix(in oklab, var(--primary) 45%, var(--border));
+  }
+
+  .projects-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .other-research-heading {
+    margin-block-end: var(--space-s);
+  }
+
+  .other-research-heading h2 {
+    font-size: var(--step-1);
+  }
+
+  .project-filters {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .project-filter-label {
+    display: flex;
+    align-items: center;
+    min-inline-size: 2.75rem;
+    min-block-size: calc(var(--control-size-compact) + 2 * var(--space-3xs));
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+  }
+
+  .project-filters .chip-filter-bar {
+    gap: var(--space-3xs);
+  }
+
+  .project-skill-controls {
+    min-inline-size: 0;
+  }
+
+  .project-skill-more {
+    margin-block-start: var(--space-3xs);
+  }
+
+  .project-skill-more summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-block-size: var(--control-size-compact);
+    padding-inline: var(--space-2xs);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    cursor: pointer;
+    list-style: none;
+    transition:
+      border-color var(--motion-duration) var(--motion-ease),
+      color var(--motion-duration-fast) var(--motion-ease);
+  }
+
+  [data-skill-more-hide] {
+    display: none;
+  }
+
+  .project-skill-more[open] [data-skill-more-show] {
+    display: none;
+  }
+
+  .project-skill-more[open] [data-skill-more-hide] {
+    display: inline;
+  }
+
+  .project-skill-more-chips {
+    margin-block-start: var(--space-3xs);
+  }
+
+  .chip-active-filter[hidden] {
+    display: none;
+  }
+
+  .project-filter-empty {
+    padding: var(--space-l);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--muted) 34%, transparent);
+    text-align: center;
+  }
+
+  .project-filter-empty[hidden] {
+    display: none;
+  }
+
+  .project-filter-empty h2,
+  .project-filter-empty p {
+    margin: 0;
+  }
+
+  .project-filter-empty h2 {
+    font-size: var(--step-1);
+  }
+
+  .project-filter-empty p {
+    margin-block-start: var(--space-3xs);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  /* Rows carry their own block padding; the gap only separates them further
+     without drawing rules, so the list stays a single quiet column. */
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+
+    /* Holds the featured star outside the text edge. Kept at every width so
+       the column's left edge stays put whichever rows are filtered in. */
+    padding-inline-start: 1rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .project-skill-more summary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  }
+
+  @media (width < 40rem) {
+    .project-filters {
+      flex-direction: column;
+      gap: var(--space-3xs);
+    }
+
+    .project-filter-label {
+      min-inline-size: 0;
+      min-block-size: 0;
+    }
+
+    .project-skill-controls {
+      inline-size: 100%;
+    }
+  }
+
+  @media (width >= 52rem) {
+    .research-overview {
+      grid-template-columns: minmax(0, 1.3fr) minmax(15rem, 0.7fr);
+      align-items: center;
+    }
+  }
+</style>
