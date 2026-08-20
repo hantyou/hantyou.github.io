@@ -1,4 +1,4 @@
 User-agent: *
-Disallow:
+Allow: /
 
-Sitemap: https://hantyou.github.io/sitemap.xml
+Sitemap: https://hantyou.github.io/sitemap-index.xml
