@@ -73,14 +73,16 @@ export const PROFILE: ProfileConfig = {
     github: "https://github.com/hantyou",
     linkedin: "https://www.linkedin.com/in/peiyuan-zhai",
     cv: "/assets/pdf/peiyuan_zhai_cv.pdf",
+    school: "https://sps.ewi.tudelft.nl/People/bio.php?id=905",
   },
   // where the links above show up. true = that section's default set, false or
   // [] = none, or list keys in the order you want them. The header renders its
   // set as bare icons, so it defaults to a handful rather than everything.
   linksPlacement: {
     header: ["email", "github", "linkedin"],
-    about: ["email", "github", "linkedin"],
-    footer: true,
+    // Remove "school" to hide the school-profile button; add it back to show it.
+    about: ["email", "github", "linkedin", "school"],
+    footer: ["email", "github", "linkedin"],
   },
 }
 

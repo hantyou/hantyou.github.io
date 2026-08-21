@@ -130,6 +130,10 @@ export const PROFILE_ICON_MAP = {
   blog: { label: "Blog", iconName: "mingcute:pen-line" },
   calendar: { label: "Calendar", iconName: "mingcute:calendar-line" },
   cv: { label: "CV", iconName: "academicons:cv" },
+  school: {
+    label: "TU Delft school profile",
+    iconName: "mingcute:school-line",
+  },
   portfolio: { label: "Portfolio", iconName: "mingcute:briefcase-line" },
   resume: { label: "Resume", iconName: "mingcute:briefcase-line" },
   website: { label: "Website", iconName: "mingcute:globe-2-line" },
