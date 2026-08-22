@@ -81,6 +81,35 @@ const hiddenKeywords = allKeywords.filter(({ count }) => count === 1)
   prose={false}
   celestial
 >
+  <div slot="header-actions" class="pub-sort">
+    <Dropdown align="end" id="pub-sort-dropdown">
+      <button
+        slot="trigger"
+        data-dropdown-trigger
+        class="pub-sort-trigger"
+        aria-label="Sort publications"
+      >
+        <Icon name="mingcute:sort-descending-line" size={16} />
+        <span data-sort-label>By Year</span>
+        <Icon name="chevron-down" size={14} />
+      </button>
+      <button
+        data-dropdown-item="year"
+        class="pub-sort-option"
+        aria-selected="true"
+      >
+        By Year
+      </button>
+      <button
+        data-dropdown-item="relevance"
+        class="pub-sort-option"
+        aria-selected="false"
+      >
+        By Relevance
+      </button>
+    </Dropdown>
+  </div>
+
   {ggScholarUrl && (
       <p class="publication-intro">
         See my full publication list on{" "}
@@ -91,37 +120,8 @@ const hiddenKeywords = allKeywords.filter(({ count }) => count === 1)
       </p>
     )}
 
-  <!-- Controls: sort dropdown + tag filter bar -->
+  <!-- Controls: tag + type filters -->
   <div class="pub-controls">
-    <div class="pub-sort">
-      <Dropdown align="start" id="pub-sort-dropdown">
-        <button
-          slot="trigger"
-          data-dropdown-trigger
-          class="pub-sort-trigger"
-          aria-label="Sort publications"
-        >
-          <Icon name="mingcute:sort-descending-line" size={16} />
-          <span data-sort-label>By Year</span>
-          <Icon name="chevron-down" size={14} />
-        </button>
-        <button
-          data-dropdown-item="year"
-          class="pub-sort-option"
-          aria-selected="true"
-        >
-          By Year
-        </button>
-        <button
-          data-dropdown-item="relevance"
-          class="pub-sort-option"
-          aria-selected="false"
-        >
-          By Relevance
-        </button>
-      </Dropdown>
-    </div>
-
     {allKeywords.length > 0 && (
         <div class="publication-tag-controls">
           <div

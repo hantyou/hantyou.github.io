@@ -32,9 +32,18 @@ const {
   {...layoutProps}
 >
   <section class="page-heading">
-    <h1>{title}</h1>
-    {description && <p class="page-description">{description}</p>}
-    {modifiedTime && <FormattedDate date={modifiedTime} class="page-modified" />}
+    <div class="page-heading-row">
+      <div class="page-heading-copy">
+        <h1>{title}</h1>
+        {description && <p class="page-description">{description}</p>}
+        {modifiedTime && <FormattedDate date={modifiedTime} class="page-modified" />}
+      </div>
+      {Astro.slots.has("header-actions") && (
+        <div class="page-heading-actions">
+          <slot name="header-actions" />
+        </div>
+      )}
+    </div>
   </section>
 
   {prose && markdown && <CopyMarkdown markdown={markdown} class="common-copy-markdown" />}
@@ -50,12 +59,39 @@ const {
 <style>
   .page-heading {
     margin-block: var(--space-s);
+  }
 
-    h1 {
-      font-size: var(--step-2);
-      line-height: calc(var(--leading-offset) + 1em);
-      font-weight: var(--font-weight-medium);
-      margin-block-end: var(--space-2xs);
+  .page-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .page-heading-copy {
+    min-inline-size: 0;
+  }
+
+  .page-heading-actions {
+    flex-shrink: 0;
+    margin-block-start: 0.125rem;
+  }
+
+  .page-heading h1 {
+    font-size: var(--step-2);
+    line-height: calc(var(--leading-offset) + 1em);
+    font-weight: var(--font-weight-medium);
+    margin-block-end: var(--space-2xs);
+  }
+
+  @media (width < 40rem) {
+    .page-heading-row {
+      flex-direction: column;
+      gap: var(--space-2xs);
+    }
+
+    .page-heading-actions {
+      margin-block-start: 0;
     }
   }
 
