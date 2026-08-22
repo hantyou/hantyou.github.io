@@ -1,5 +1,6 @@
 ---
 import type { ProcessedPublication } from "@/types"
+import { getCollection } from "astro:content"
 
 import { PROFILE } from "@site-config"
 import { formatCount } from "@/lib/plural"
@@ -50,6 +51,22 @@ const publicationTypes = [
           : type,
   count: allPublicationsFlat.filter((pub) => pub.entryType === type).length,
 }))
+
+// Project → related-publication mapping for the "?project=" pinned view.
+// Reached only from the Research timeline's "Related paper(s)" buttons.
+const projectPins = new Map<string, { title: string; pubs: string[] }>()
+for (const project of await getCollection("projects")) {
+  if (project.data.relatedPublications.length > 0) {
+    projectPins.set(project.id, {
+      title: project.data.title,
+      pubs: project.data.relatedPublications,
+    })
+  }
+}
+const projectPinsJson = JSON.stringify([...projectPins.entries()]).replace(
+  /</g,
+  "\\u003c",
+)
 ---
 
 <CommonLayout
@@ -243,6 +260,13 @@ const publicationTypes = [
     </aside>
   </div>
 </CommonLayout>
+
+<script
+  is:inline
+  type="application/json"
+  data-project-pins
+  set:html={projectPinsJson}
+></script>
 
 <script>
   import { initFacetedChipFilter } from "@/lib/chip-filter"
@@ -495,26 +519,182 @@ const publicationTypes = [
     })
   }
 
+  function initProjectPinnedPublications() {
+    const browse = document.querySelector<HTMLElement>(
+      "[data-publication-browse]",
+    )
+    if (!browse || browse.dataset.pinnedInitialized === "true") return
+    browse.dataset.pinnedInitialized = "true"
+
+    const pinsScript = document.querySelector<HTMLScriptElement>(
+      "[data-project-pins]",
+    )
+    if (!pinsScript?.textContent) return
+
+    let projectPins = new Map<string, { title: string; pubs: string[] }>()
+    try {
+      projectPins = new Map(JSON.parse(pinsScript.textContent))
+    } catch {
+      return
+    }
+
+    const projectId =
+      new URLSearchParams(window.location.search).get("project") ?? ""
+    const pin = projectId ? projectPins.get(projectId) : undefined
+    if (!pin || pin.pubs.length === 0) return
+
+    const views = [
+      browse.querySelector<HTMLElement>('[data-pub-view="relevance"]'),
+      browse.querySelector<HTMLElement>('[data-pub-view="year"]'),
+    ]
+
+    for (const view of views) {
+      if (!view) continue
+
+      const cards = pin.pubs
+        .map((id) =>
+          view.querySelector<HTMLElement>(`[data-publication-preview="${id}"]`),
+        )
+        .filter((card): card is HTMLElement => Boolean(card))
+      if (cards.length === 0) continue
+
+      // Pinned group, styled to match the Section/CardGroup primitives.
+      const group = document.createElement("section")
+      group.className = "pub-pinned-group"
+      group.dataset.pubYearSection = "pinned"
+      group.dataset.pubPinned = projectId
+
+      const heading = document.createElement("div")
+      heading.className = "pub-pinned-heading"
+      const kicker = document.createElement("p")
+      kicker.className = "pub-pinned-kicker"
+      kicker.textContent = "Related publications"
+      const title = document.createElement("h2")
+      title.textContent = pin.title
+      heading.append(kicker, title)
+      group.append(heading)
+
+      // Reuse the global card-group layout for the moved cards.
+      const cardsWrap = document.createElement("div")
+      cardsWrap.dataset.slot = "card-group"
+      cardsWrap.dataset.columns = "1"
+      cardsWrap.dataset.breakpoint = "medium"
+      cardsWrap.dataset.orientation = "stacked"
+      cardsWrap.dataset.separated = "true"
+      for (const card of cards) cardsWrap.append(card)
+      group.append(cardsWrap)
+
+      // Soft divider between the pinned publications and the rest.
+      const divider = document.createElement("div")
+      divider.className = "pub-pinned-divider"
+      divider.setAttribute("role", "separator")
+      const dividerLabel = document.createElement("span")
+      dividerLabel.textContent = "All publications"
+      divider.append(dividerLabel)
+
+      view.prepend(group)
+      group.after(divider)
+    }
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
       () => {
         initPublicationControls()
         initPublicationPreview()
+        initProjectPinnedPublications()
       },
       { once: true },
     )
   } else {
     initPublicationControls()
     initPublicationPreview()
+    initProjectPinnedPublications()
   }
   document.addEventListener("astro:page-load", initPublicationControls)
   document.addEventListener("astro:page-load", initPublicationPreview)
   document.addEventListener("astro:after-swap", initPublicationControls)
   document.addEventListener("astro:after-swap", initPublicationPreview)
+  document.addEventListener("astro:page-load", initProjectPinnedPublications)
+  document.addEventListener("astro:after-swap", initProjectPinnedPublications)
 </script>
 
 <style>
+  /* Pinned-view group + divider are created client-side, so their styles
+     must be global (no Astro scope attribute on the generated elements). */
+  :global(.pub-pinned-group) {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  :global(.pub-pinned-heading) {
+    display: grid;
+    gap: var(--space-3xs);
+    margin-block-start: var(--space-m);
+  }
+
+  :global(.pub-pinned-kicker) {
+    margin: 0;
+    color: var(--primary);
+    font-size: var(--step--2);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  :global(.pub-pinned-heading h2) {
+    position: relative;
+    width: fit-content;
+    margin: 0;
+    padding-block-end: 0.125rem;
+    color: var(--foreground);
+    font-size: var(--step-2);
+    line-height: 1.333;
+    font-weight: var(--font-weight-medium);
+  }
+
+  :global(.pub-pinned-heading h2::after) {
+    content: "";
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    inline-size: 2rem;
+    block-size: 2px;
+    border-radius: 1px;
+    background: var(--primary);
+    opacity: 0.7;
+  }
+
+  :global(.pub-pinned-divider) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-block: var(--space-xl) var(--space-l);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  :global(.pub-pinned-divider::before),
+  :global(.pub-pinned-divider::after) {
+    content: "";
+    flex: 1;
+    block-size: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--border) 75%, transparent)
+    );
+  }
+
+  :global(.pub-pinned-divider::after) {
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in oklab, var(--border) 75%, transparent)
+    );
+  }
+
   .pub-controls {
     display: flex;
     flex-wrap: wrap;

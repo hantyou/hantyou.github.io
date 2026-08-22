@@ -97,7 +97,10 @@ const initialProjectId = projects[0]?.id
                 Explore research
               </Button>
               {publicationCount > 0 && (
-                <Button href="/publications" variant="ghost">
+                <Button
+                  href={`/publications?project=${project.id}`}
+                  variant="ghost"
+                >
                   {publicationCount === 1 ? "Related paper" : `${publicationCount} related papers`}
                 </Button>
               )}
