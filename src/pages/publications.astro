@@ -67,6 +67,11 @@ const projectPinsJson = JSON.stringify([...projectPins.entries()]).replace(
   /</g,
   "\\u003c",
 )
+
+// Prominent tags stay visible in one compact row; the rest collapse into a
+// disclosure so the filter bar does not dominate the page.
+const prominentKeywords = allKeywords.filter(({ count }) => count > 1)
+const hiddenKeywords = allKeywords.filter(({ count }) => count === 1)
 ---
 
 <CommonLayout
@@ -118,36 +123,63 @@ const projectPinsJson = JSON.stringify([...projectPins.entries()]).replace(
     </div>
 
     {allKeywords.length > 0 && (
-        <div
-          class="chip-filter-bar"
-          role="group"
-          aria-label="Filter publications by tag"
-        >
-          {allKeywords.map(({ keyword, count }) => (
-            <TaxonomyChip
-              label={keyword}
-              count={count}
-              countNoun="publication"
-              data-pub-tag-filter={slugify(keyword)}
-              aria-pressed="false"
-              aria-label={`Filter publications by ${keyword}; ${formatCount(count, "publication")}`}
+        <div class="publication-tag-controls">
+          <div
+            class="chip-filter-bar"
+            role="group"
+            aria-label="Filter publications by tag"
+          >
+            {prominentKeywords.map(({ keyword, count }) => (
+              <TaxonomyChip
+                label={keyword}
+                count={count}
+                countNoun="publication"
+                data-pub-tag-filter={slugify(keyword)}
+                aria-pressed="false"
+                aria-label={`Filter publications by ${keyword}; ${formatCount(count, "publication")}`}
+              />
+            ))}
+            <span class="chip-active-filter" data-active-filter hidden>
+              <TaxonomyChip
+                label="Clear"
+                prefix="×"
+                tone="destructive"
+                data-clear-filter
+                aria-label="Clear publication filter"
+              />
+            </span>
+            <span
+              class="sr-only"
+              aria-live="polite"
+              aria-atomic="true"
+              data-publication-filter-status
             />
-          ))}
-          <span class="chip-active-filter" data-active-filter hidden>
-            <TaxonomyChip
-              label="Clear"
-              prefix="×"
-              tone="destructive"
-              data-clear-filter
-              aria-label="Clear publication filter"
-            />
-          </span>
-          <span
-            class="sr-only"
-            aria-live="polite"
-            aria-atomic="true"
-            data-publication-filter-status
-          />
+          </div>
+          {hiddenKeywords.length > 0 && (
+            <details class="pub-tag-more" data-disclosure>
+              <summary>
+                <span data-tag-more-show>
+                  Show {formatCount(hiddenKeywords.length, "more tag")}
+                </span>
+                <span data-tag-more-hide>Hide additional tags</span>
+                <span data-disclosure-chevron>
+                  <Icon name="chevron-down" />
+                </span>
+              </summary>
+              <div class="chip-filter-bar pub-tag-more-chips">
+                {hiddenKeywords.map(({ keyword, count }) => (
+                  <TaxonomyChip
+                    label={keyword}
+                    count={count}
+                    countNoun="publication"
+                    data-pub-tag-filter={slugify(keyword)}
+                    aria-pressed="false"
+                    aria-label={`Filter publications by ${keyword}; ${formatCount(count, "publication")}`}
+                  />
+                ))}
+              </div>
+            </details>
+          )}
         </div>
     )}
     {publicationTypes.length > 0 && (
@@ -484,21 +516,6 @@ const projectPinsJson = JSON.stringify([...projectPins.entries()]).replace(
     })
 
     root
-      .querySelectorAll<HTMLButtonElement>("[data-publication-preview-pin]")
-      .forEach((button) => {
-        button.addEventListener("click", () => {
-          const id = button.dataset.publicationPreviewPin
-          if (!id) return
-          const card = button.closest<HTMLElement>("[data-publication-preview]")
-          if (isPinned && activeId === id) {
-            close()
-          } else {
-            show(id, true, card ?? undefined)
-          }
-        })
-      })
-
-    root
       .querySelectorAll<HTMLButtonElement>("[data-publication-preview-close]")
       .forEach((button) => {
         button.addEventListener("click", close)
@@ -693,6 +710,54 @@ const projectPinsJson = JSON.stringify([...projectPins.entries()]).replace(
       transparent,
       color-mix(in oklab, var(--border) 75%, transparent)
     );
+  }
+
+  .publication-tag-controls {
+    min-inline-size: 0;
+  }
+
+  .pub-tag-more {
+    margin-block-start: var(--space-3xs);
+  }
+
+  .pub-tag-more summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-block-size: var(--control-size-compact);
+    padding-inline: var(--space-2xs);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    cursor: pointer;
+    list-style: none;
+    transition:
+      border-color var(--motion-duration) var(--motion-ease),
+      color var(--motion-duration-fast) var(--motion-ease);
+  }
+
+  [data-tag-more-hide] {
+    display: none;
+  }
+
+  .pub-tag-more[open] [data-tag-more-show] {
+    display: none;
+  }
+
+  .pub-tag-more[open] [data-tag-more-hide] {
+    display: inline;
+  }
+
+  .pub-tag-more-chips {
+    margin-block-start: var(--space-3xs);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pub-tag-more summary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
   }
 
   .pub-controls {

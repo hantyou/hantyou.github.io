@@ -103,15 +103,6 @@ const hiddenAuthorsId = `publication-${slugify(pub.title)}-${pub.year ?? "unknow
     </CardContent>
 
     <CardFooter class="publication-actions">
-      {previewable && (
-          <Button
-            variant="ghost"
-            data-publication-preview-pin={pub.id}
-            aria-label={`Preview “${pub.title}”`}
-          >
-            Quick view
-          </Button>
-        )}
       {pub.abstract && (
           <details
             class="publication-abstract"
