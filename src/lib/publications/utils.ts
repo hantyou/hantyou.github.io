@@ -601,6 +601,18 @@ export function getPublicationData(
 
   const venue = inferVenue(publication)
 
+  // Theses render their degree label next to the institution.
+  const THESIS_LABELS: Record<string, string> = {
+    mastersthesis: "Master thesis",
+    phdthesis: "PhD thesis",
+  }
+  const thesisLabel = THESIS_LABELS[publication.entryType || ""]
+  const publisher = venue
+    ? thesisLabel
+      ? `${venue} (${thesisLabel})`
+      : venue
+    : undefined
+
   const authorPosition = getHighlightedAuthorPosition(
     publication.authors || [],
     config.highlightAuthor,
@@ -629,7 +641,7 @@ export function getPublicationData(
       hiddenCount: authorData.hiddenCount,
       hiddenAuthors: authorData.hiddenAuthors,
     },
-    publisher: venue || undefined,
+    publisher,
     links,
     keywords,
     expandedKeywords,
