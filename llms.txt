@@ -8,7 +8,7 @@ This file contains information about this website for AI language models.
 - Owner: Peiyuan Zhai - PhD Researcher, Signal Processing
 - Content: Academic research, blog posts, projects, and tools
 - Language: English
-- Last Updated: 2026-08-21
+- Last Updated: 2026-08-22
 
 ## Content Overview
 
