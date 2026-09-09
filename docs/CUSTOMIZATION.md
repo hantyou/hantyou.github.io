@@ -109,6 +109,18 @@ root. `astro.config.ts` defaults `base` to `/zhai` and reads the `SITE_BASE`
 environment variable to override it, which is how the GitHub Pages workflow
 builds at the root.
 
+Always set the base with `SITE_BASE`, never with Astro's `--base` CLI flag.
+The flag is applied after `astro.config.ts` is evaluated, so the
+`internal-links` plugin below is constructed with the wrong base: `.astro`
+links would use the flag's value while Markdown links kept the default, and
+one of the two sets would 404. Any deploy target -- a self-hosted server as
+much as CI -- has to pass `SITE_BASE`:
+
+```bash
+SITE_BASE=/           pnpm astro build --site https://hantyou.github.io
+SITE_BASE=/zhai       pnpm astro build --site https://slipzhai.cc
+```
+
 Never hardcode the base in a link. Write every internal link site-root-relative
 (`/assets/pdf/cv.pdf`, `/people`) and the base is applied at build time:
 
