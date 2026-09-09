@@ -6,6 +6,7 @@ import { calloutDirective } from "../src/lib/callout.ts"
 import { externalLinks } from "../src/lib/external-links.ts"
 import { headingAnchors } from "../src/lib/heading-anchors.ts"
 import { headingNamespace } from "../src/lib/heading-namespace.ts"
+import { internalLinks } from "../src/lib/internal-links.ts"
 import { temmlMath } from "../src/lib/math.ts"
 import { normalizeHeadings } from "../src/plugins/satteri-normalize-headings.ts"
 import { satteriSidenotes } from "../src/plugins/satteri-sidenotes.ts"
@@ -99,4 +100,61 @@ void test("subpost heading namespaces reset for every document", () => {
   assert.match(first.html, /id="first-repeated-1"/)
   assert.match(second.html, /id="second-repeated"/)
   assert.doesNotMatch(second.html, /id="second-repeated-1"/)
+})
+
+void test("internal links resolve against the configured base", () => {
+  const { html } = markdownToHtml(
+    [
+      "[Slides](/assets/pdf/slides.pdf)",
+      "",
+      "![Diagram](/img/projects/spear.png)",
+    ].join("\n"),
+    { hastPlugins: [internalLinks("/zhai")] },
+  )
+
+  assert.match(html, /href="\/zhai\/assets\/pdf\/slides\.pdf"/)
+  assert.match(html, /src="\/zhai\/img\/projects\/spear\.png"/)
+})
+
+void test("internal links inside raw HTML resolve against the base", () => {
+  const { html } = markdownToHtml(
+    '<object class="talk-pdf" data="/assets/pdf/slides.pdf" type="application/pdf"><a href="/assets/pdf/slides.pdf">Open the slides PDF</a></object>',
+    { hastPlugins: [internalLinks("/zhai")] },
+  )
+
+  assert.match(html, /data="\/zhai\/assets\/pdf\/slides\.pdf"/)
+  assert.match(html, /href="\/zhai\/assets\/pdf\/slides\.pdf"/)
+})
+
+void test("only site-root-relative internal URLs are rewritten", () => {
+  const markdown = [
+    "[External](https://example.com/slides.pdf)",
+    "",
+    "[Anchor](#section)",
+    "",
+    "[Already based](/zhai/assets/pdf/slides.pdf)",
+    "",
+    '<iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID"></iframe>',
+  ].join("\n")
+  const { html } = markdownToHtml(markdown, {
+    hastPlugins: [internalLinks("/zhai")],
+  })
+
+  assert.match(html, /href="https:\/\/example\.com\/slides\.pdf"/)
+  assert.match(html, /href="#section"/)
+  assert.match(
+    html,
+    /src="https:\/\/www\.youtube-nocookie\.com\/embed\/VIDEO_ID"/,
+  )
+  assert.doesNotMatch(html, /\/zhai\/zhai\//)
+})
+
+void test("a root base leaves internal links untouched", () => {
+  const { html } = markdownToHtml(
+    '[Slides](/assets/pdf/slides.pdf)\n\n<object data="/assets/pdf/slides.pdf"></object>',
+    { hastPlugins: [internalLinks("/")] },
+  )
+
+  assert.match(html, /href="\/assets\/pdf\/slides\.pdf"/)
+  assert.match(html, /data="\/assets\/pdf\/slides\.pdf"/)
 })

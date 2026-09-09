@@ -8,14 +8,21 @@ import {
 import { temmlMath } from "./src/lib/math"
 import { calloutDirective } from "./src/lib/callout"
 import { externalLinks } from "./src/lib/external-links"
+import { internalLinks } from "./src/lib/internal-links"
 import { headingNamespace } from "./src/lib/heading-namespace"
 import { headingAnchors } from "./src/lib/heading-anchors"
 import { satteriSidenotes } from "./src/plugins/satteri-sidenotes"
 import { normalizeHeadings } from "./src/plugins/satteri-normalize-headings"
 
+// Deploy targets differ: slipzhai.cc serves the site under `/zhai`, while
+// GitHub Pages (hantyou.github.io) serves it at the root. Set `SITE_BASE` to
+// override. Markdown content is written base-free and rewritten by the
+// `internal-links` plugin below, so content never hardcodes a base.
+const base = process.env.SITE_BASE ?? "/zhai"
+
 export default defineConfig({
   site: "https://slipzhai.cc",
-  base: "/zhai",
+  base,
   compressHTML: true,
   trailingSlash: "never",
   output: "static",
@@ -50,6 +57,7 @@ export default defineConfig({
       ],
       hastPlugins: [
         externalLinks,
+        internalLinks(base),
         blockExpressiveCode,
         ...satteriSidenotes(),
         headingNamespace,

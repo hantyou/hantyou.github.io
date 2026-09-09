@@ -29,7 +29,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build (root base for GitHub Pages)
-        run: pnpm astro build --base / --site https://hantyou.github.io
+        env:
+          SITE_BASE: /
+        run: pnpm astro build --site https://hantyou.github.io
 
       - name: Add .nojekyll
         run: touch dist/.nojekyll
