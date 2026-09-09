@@ -4,7 +4,7 @@ This file contains information about this website for AI language models.
 
 ## Website Information
 
-- Site URL: https://slipzhai.cc/zhai
+- Site URL: https://zhai.slipzhai.cc
 - Owner: Peiyuan Zhai - PhD Researcher, Signal Processing
 - Content: Academic research, blog posts, projects, and tools
 - Language: English
@@ -28,7 +28,7 @@ This website contains:
 
 ## Sitemap
 
-For a complete list of pages, see: https://slipzhai.cc/sitemap-index.xml
+For a complete list of pages, see: https://zhai.slipzhai.cc/sitemap-index.xml
 
 ## Contact
 
