@@ -34,9 +34,10 @@
     "lint": "oxlint --type-aware",
     "lint:styles": "node scripts/check-style-architecture.mjs",
     "test:markdown": "node --experimental-strip-types --test tests/markdown-plugins.test.ts",
+    "test:links": "node --experimental-strip-types --test tests/links.test.ts",
     "test:editor-contract": "node --experimental-strip-types --test tests/editor-content-contract.test.ts",
     "verify": "node scripts/verify.mjs",
-    "routine": "pnpm lint && pnpm lint:styles && pnpm test:markdown && pnpm sync && pnpm format",
+    "routine": "pnpm lint && pnpm lint:styles && pnpm test:markdown && pnpm test:links && pnpm sync && pnpm format",
     "clean": "rm -rf dist/ .astro/ node_modules/.astro/data-store.json",
     "prepare": "husky"
   },

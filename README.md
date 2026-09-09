@@ -19,7 +19,7 @@ contributing to, or publishing a general Astro theme have been removed.
 ## Repository guide
 
 - `src/content/`: website content, including the about page, blog posts,
-  projects, experience, people, and publications.
+  projects, talks, experience, people, and publications.
 - `src/site.config.ts`: site identity, navigation, profile links, and footer
   configuration.
 - `src/pages/` and `src/components/`: Astro routes and presentation components.

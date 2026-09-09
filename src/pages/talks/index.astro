@@ -1,0 +1,36 @@
+---
+import { getTalks } from "@/lib/talks"
+import CommonLayout from "@/layouts/CommonLayout.astro"
+import CardGroup from "@/components/base/card/CardGroup.astro"
+import TalkCard from "@/components/talks/TalkCard.astro"
+
+const talks = await getTalks()
+
+const description =
+  "Talks, seminars, and conference presentations by Peiyuan Zhai."
+---
+
+<CommonLayout
+  title="Talks"
+  {description}
+  prose={false}
+  breadcrumbs={[{ label: "Talks", icon: "talk" }]}
+>
+  {talks.length > 0 ? (
+      <CardGroup columns={2} class="talks-grid">
+        {talks.map((talk) => <TalkCard {talk} />)}
+      </CardGroup>
+    ) : (
+      <p class="talks-empty">No talks yet.</p>
+    )}
+</CommonLayout>
+
+<style>
+  .talks-grid {
+    align-items: start;
+  }
+
+  .talks-empty {
+    color: var(--muted-foreground);
+  }
+</style>

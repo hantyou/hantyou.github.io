@@ -1,0 +1,190 @@
+---
+import "@/styles/callout.css"
+import "@/styles/sidenote.css"
+
+import { render, type CollectionEntry } from "astro:content"
+
+import { withBase } from "@/lib/links"
+import {
+  getTalkLinks,
+  getTalks,
+  getYouTubeEmbedUrl,
+  PDF_VIEWER_PARAMS,
+} from "@/lib/talks"
+import Layout from "@/layouts/Layout.astro"
+import Button from "@/components/base/Button.astro"
+import FormattedDate from "@/components/base/FormattedDate.astro"
+import Icon from "@/components/base/Icon.astro"
+
+export async function getStaticPaths() {
+  const talks = await getTalks()
+
+  return talks.map((talk) => ({
+    params: { id: talk.id },
+    props: { talk },
+  }))
+}
+
+type Props = {
+  talk: CollectionEntry<"talks">
+}
+
+const { talk } = Astro.props
+const { Content } = await render(talk)
+const { title, event, location, date, description, video, slides, poster } =
+  talk.data
+
+const links = getTalkLinks(talk)
+const embedUrl = video ? getYouTubeEmbedUrl(video) : null
+// Portrait posters get their own aspect ratio; a deck stays 16:9.
+const documents = [
+  { id: "slides", href: slides, label: "slides", portrait: false },
+  { id: "poster", href: poster, label: "poster", portrait: true },
+].filter((document): document is typeof document & { href: string } =>
+  Boolean(document.href),
+)
+---
+
+<Layout
+  {title}
+  description={description ?? `Talk: ${title}`}
+  breadcrumbs={[
+    { href: "/talks", label: "Talks", icon: "talk" },
+    { label: title, icon: "file" },
+  ]}
+>
+  <header class="talk-header">
+    <h1>{title}</h1>
+    <div class="talk-meta-row">
+      <span>{event}</span>
+      {location && <span>{location}</span>}
+      <FormattedDate date={date} options={{ year: "numeric", month: "long" }} />
+    </div>
+    {links.length > 0 && (
+        <div class="talk-links">
+          {links.map(({ href, icon, label }) => (
+            <Button href={href} variant="accent-outline">
+              <Icon name={icon} />
+              <span>{label}</span>
+            </Button>
+          ))}
+        </div>
+      )}
+  </header>
+
+  {embedUrl && (
+      <section id="video" class="talk-media" aria-label="Talk recording">
+        <iframe
+          class="talk-video"
+          src={embedUrl}
+          title={`${title} — video`}
+          loading="lazy"
+          allowfullscreen
+        />
+      </section>
+    )}
+
+  {documents.map(({ id, href, label, portrait }) => (
+      <section {id} class="talk-media" aria-label={`Talk ${label}`}>
+        <object
+          class:list={["talk-pdf", { "talk-pdf--portrait": portrait }]}
+          data={`${withBase(href)}${PDF_VIEWER_PARAMS}`}
+          type="application/pdf"
+          aria-label={`${title} — ${label}`}
+        >
+          <a href={withBase(href)}>Open the {label} PDF</a>
+        </object>
+      </section>
+    ))}
+
+  {talk.body?.trim() && (
+      <section class="talk-abstract" aria-labelledby="talk-abstract-title">
+        <h2 id="talk-abstract-title">About this talk</h2>
+        <prose-content>
+          <Content />
+        </prose-content>
+      </section>
+    )}
+</Layout>
+
+<style>
+  .talk-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    margin-block-end: var(--space-l);
+  }
+
+  .talk-header h1 {
+    margin: 0;
+    font-size: var(--step-3);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+    text-wrap: balance;
+  }
+
+  @media (width >= 40rem) {
+    .talk-header h1 {
+      font-size: var(--step-4);
+    }
+  }
+
+  .talk-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3xs) var(--space-2xs);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  /* Punctuation lives in CSS so screen readers read separate fields. The
+     separator trails its own field, so a wrap never starts with a stray dot. */
+  .talk-meta-row > :not(:last-child)::after {
+    margin-inline-start: var(--space-2xs);
+    content: "·";
+  }
+
+  .talk-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .talk-media {
+    margin-block-end: var(--space-l);
+    /* Cards link straight to these sections; keep the sticky menu bar from
+       covering the embed when one is jumped to. */
+    scroll-margin-block-start: var(--page-offset-top);
+  }
+
+  .talk-video,
+  .talk-pdf {
+    display: block;
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-xl);
+  }
+
+  .talk-video {
+    border: 0;
+    background: var(--muted);
+  }
+
+  .talk-pdf {
+    border: 1px solid var(--border);
+    background: white;
+  }
+
+  .talk-pdf--portrait {
+    max-inline-size: 30rem;
+    aspect-ratio: 3 / 4;
+    margin-inline: auto;
+  }
+
+  .talk-abstract h2 {
+    margin-block-end: var(--space-2xs);
+    font-size: var(--step-1);
+  }
+</style>

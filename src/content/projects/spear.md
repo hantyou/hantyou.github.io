@@ -40,4 +40,4 @@ The project is part of TU Delft's Signal Processing Systems research line on dis
 
 Project context: [TU Delft Signal Processing Systems](https://sps.ewi.tudelft.nl/Research/project.php?id=204&ti=66).
 
-![SPEAR project architecture](/zhai/img/projects/spear.png)
+![SPEAR project architecture](/img/projects/spear.png)

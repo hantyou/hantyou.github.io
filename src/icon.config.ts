@@ -12,6 +12,7 @@ export const SEMANTIC_ICONS = {
   "post-active": "mingcute:book-line",
   question: "mingcute:question-line",
   research: "mingcute:mortarboard-line",
+  talk: "mingcute:mic-line",
   subpost: "mingcute:document-line",
   tool: "mingcute:tool-line",
 
@@ -175,8 +176,8 @@ export const PUBLICATION_LINK_TYPES = {
 
   // Presentation & discussion
   post: { label: "Post", iconName: "mingcute:pen-line" },
-  poster: { label: "Poster", iconName: "mingcute:image-line" },
-  slides: { label: "Slides", iconName: "mingcute:presentation-line" },
+  poster: { label: "Poster", iconName: "mingcute:pic-line" },
+  slides: { label: "Slides", iconName: "mingcute:presentation-1-line" },
   talk: { label: "Talk", iconName: "mingcute:mic-line" },
   thread: { label: "Thread", iconName: "mingcute:comment-line" },
   video: { label: "Video", iconName: "mingcute:video-line" },
