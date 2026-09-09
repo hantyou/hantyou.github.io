@@ -65,8 +65,13 @@ const socialImage = (() => {
   }
 })()
 
-// Canonical URL optimization
-const canonicalURL = Astro.site?.toString() || SITE.href
+// Canonical URL: each page declares its own URL (site origin + this page's
+// path, with the trailing slash normalized away to match `trailingSlash:
+// "never"`), rather than pointing every page at the bare site root.
+const canonicalPath = Astro.url.pathname.replace(/\/+$/, "") || "/"
+const canonicalURL = Astro.site
+  ? new URL(canonicalPath, Astro.site).toString()
+  : SITE.href
 
 // JSON-LD structured data for better SEO
 const structuredData = {
@@ -190,7 +195,7 @@ const structuredData = {
     rel="alternate"
     type="application/rss+xml"
     title={SITE.title}
-    href={`${SITE.href}rss.xml`}
+    href={`${SITE.href}/rss.xml`}
   >
 
   <ClientRouter />

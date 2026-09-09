@@ -14,14 +14,14 @@ import { headingAnchors } from "./src/lib/heading-anchors"
 import { satteriSidenotes } from "./src/plugins/satteri-sidenotes"
 import { normalizeHeadings } from "./src/plugins/satteri-normalize-headings"
 
-// Deploy targets differ: slipzhai.cc serves the site under `/zhai`, while
-// GitHub Pages (hantyou.github.io) serves it at the root. Set `SITE_BASE` to
-// override. Markdown content is written base-free and rewritten by the
-// `internal-links` plugin below, so content never hardcodes a base.
-const base = process.env.SITE_BASE ?? "/zhai"
+// The site's public home is zhai.slipzhai.cc (GitHub Pages + custom domain),
+// served at the root. SITE_BASE remains honored for any future subpath
+// deployment; content is written base-free and rewritten by the `internal-links`
+// plugin below, so content never hardcodes a base.
+const base = process.env.SITE_BASE ?? "/"
 
 export default defineConfig({
-  site: "https://slipzhai.cc",
+  site: "https://zhai.slipzhai.cc",
   base,
   compressHTML: true,
   trailingSlash: "never",

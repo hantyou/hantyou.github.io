@@ -11,6 +11,7 @@ import {
   getProjects,
 } from "@/lib/projects"
 import { buildMarkdownDocument } from "@/lib/markdown-document"
+import { withBase } from "@/lib/links"
 import { loadAllPublications } from "@/lib/publications/loader"
 import Layout from "@/layouts/Layout.astro"
 import Badge from "@/components/base/Badge.astro"
@@ -99,7 +100,7 @@ const rawMarkdown = project.body
   <header class="project-header">
     {parentProject && (
         <p class="project-parent">
-          Part of <a href={`/projects/${parentProject.id}`}>{parentProject.data.title}</a>
+          Part of <a href={withBase(`/projects/${parentProject.id}`)}>{parentProject.data.title}</a>
         </p>
       )}
     <div class="project-title-row">

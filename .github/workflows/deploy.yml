@@ -31,7 +31,7 @@ jobs:
       - name: Build (root base for GitHub Pages)
         env:
           SITE_BASE: /
-        run: pnpm astro build --site https://hantyou.github.io
+        run: pnpm astro build --site https://zhai.slipzhai.cc
 
       - name: Add .nojekyll
         run: touch dist/.nojekyll

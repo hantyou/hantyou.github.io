@@ -10,7 +10,7 @@ export const SITE: SiteConfig = {
   title: "Peiyuan Zhai",
   description:
     "PhD researcher at TU Delft studying autonomous perception, sensor fusion, and Bayesian learning.",
-  href: "https://slipzhai.cc/zhai",
+  href: "https://zhai.slipzhai.cc",
   author: "Peiyuan Zhai",
   dir: "ltr",
   defaultPageImage: "/img/social-preview.png",
