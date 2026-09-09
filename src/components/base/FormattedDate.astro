@@ -10,13 +10,16 @@ interface Props {
   date: Date | string
   /** Additional CSS classes */
   class?: string
+  /** Display options, merged over the site defaults. Use for coarser
+      precision, e.g. a month-only date that has no meaningful day. */
+  options?: Intl.DateTimeFormatOptions
 }
 
-const { date, class: className } = Astro.props
+const { date, class: className, options } = Astro.props
 
 const dateObj = createLocalDate(date)
 const isoDate = formatDateTimeISO(dateObj)
-const displayDate = formatDate(dateObj)
+const displayDate = formatDate(dateObj, undefined, options)
 ---
 
 <time datetime={isoDate} class={className}>

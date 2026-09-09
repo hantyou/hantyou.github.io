@@ -103,6 +103,36 @@ const projects = defineCollection({
     ),
 })
 
+const talks = defineCollection({
+  loader: glob({ base: "./src/content/talks", pattern: "**/!(*README).md" }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().max(120),
+      event: z.string().trim().min(1).max(120),
+      location: z.string().trim().min(1).max(80).optional(),
+      date: yearMonthDateSchema,
+      description: z.string().max(200).optional(),
+      video: z.url().optional(),
+      slides: z
+        .string()
+        .startsWith("/")
+        .optional()
+        .describe("Site-root-relative path to a PDF in public/."),
+      poster: z
+        .string()
+        .startsWith("/")
+        .optional()
+        .describe("Site-root-relative path to a PDF in public/."),
+      thumbnail: image()
+        .optional()
+        .describe("Cover image, relative to this file. Optimized at build."),
+      thumbnailOrientation: z
+        .enum(["landscape", "portrait"])
+        .default("landscape"),
+      selected: z.boolean().default(false),
+    }),
+})
+
 const updates = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/updates" }),
   schema: z.object({}),
@@ -122,4 +152,11 @@ const experience = defineCollection({
   }),
 })
 
-export const collections = { blog, experience, people, projects, updates }
+export const collections = {
+  blog,
+  experience,
+  people,
+  projects,
+  talks,
+  updates,
+}
