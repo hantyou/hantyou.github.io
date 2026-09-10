@@ -1,46 +1,55 @@
 ---
 import type { CollectionEntry } from "astro:content"
 
-import Button, {
-  type Props as ButtonProps,
-} from "@/components/base/Button.astro"
-
-export interface ResearchTimelineAction {
-  href: string
-  label: string
-  variant?: ButtonProps["variant"]
-}
+import Button from "@/components/base/Button.astro"
 
 interface Props {
+  program: CollectionEntry<"projects">
   projects: CollectionEntry<"projects">[]
-  actions?: ResearchTimelineAction[]
 }
 
-const { projects, actions = [] } = Astro.props
+const { program, projects } = Astro.props
 const initialProjectId = projects[0]?.id
+const programMeta = program.data.program
+const headingId = `research-timeline-title-${program.id}`
+
+const { fromDate, toDate } = program.data
+const fromYear = fromDate?.getFullYear()
+const toYear = toDate?.getFullYear()
+const programDates = fromYear
+  ? fromYear === toYear
+    ? `${fromYear}`
+    : `${fromYear}–${toYear ?? "Now"}`
+  : undefined
 ---
 
 <section
   class="research-timeline"
   data-research-timeline
-  aria-labelledby="research-timeline-title"
+  aria-labelledby={headingId}
 >
   <div class="research-timeline-heading">
-    <p class="research-timeline-eyebrow">
-      SPEAR · multimodal sensing for automotive radar
-    </p>
-    <h2 id="research-timeline-title">Research strands</h2>
-    <p>
-      Explore the topic projects that connect my PhD research with its
-      publications.
-    </p>
-    {actions.length > 0 && (
-      <div class="research-timeline-heading-actions">
-        {actions.map(({ href, label, variant = "ghost" }) => (
-          <Button {href} {variant}>{label}</Button>
-        ))}
+    {(programMeta?.eyebrow || programDates) && (
+      <div class="research-timeline-eyebrow-row">
+        {programMeta?.eyebrow && (
+          <p class="research-timeline-eyebrow">{programMeta.eyebrow}</p>
+        )}
+        {programDates && <p class="research-timeline-dates">{programDates}</p>}
       </div>
     )}
+    <div class="research-timeline-heading-copy">
+      <h2 id={headingId}>{programMeta?.heading ?? "Research strands"}</h2>
+      {programMeta?.description && <p>{programMeta.description}</p>}
+      {(programMeta?.actions?.length ?? 0) > 0 && (
+        <div class="research-timeline-heading-actions">
+          {programMeta?.actions?.map((action) => (
+            <Button href={action.href} variant={action.variant ?? "ghost"}>
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
   </div>
 
   <div class="research-timeline-layout">
@@ -141,7 +150,28 @@ const initialProjectId = projects[0]?.id
   .research-timeline-heading {
     display: grid;
     gap: var(--space-3xs);
+  }
+
+  .research-timeline-eyebrow-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+  }
+
+  .research-timeline-heading-copy {
+    display: grid;
+    gap: var(--space-3xs);
     max-inline-size: 46rem;
+  }
+
+  .research-timeline-dates {
+    margin-inline-start: auto;
+    color: var(--muted-foreground);
+    font-size: var(--step--2);
+    font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
   }
 
   .research-timeline-eyebrow,

@@ -40,16 +40,10 @@ const [{ Content }, navigation] = await Promise.all([
   render(project),
   getProjectNavigation(project.id),
 ])
-const childResearchProjects =
-  project.id === "spear"
-    ? (
-        await getProjects(
-          (candidate) => candidate.data.parentProject === project.id,
-        )
-      ).sort(
-        (a, b) => (a.data.timelineOrder ?? 0) - (b.data.timelineOrder ?? 0),
-      )
-    : []
+const childResearchProjects = (
+  await getProjects((candidate) => candidate.data.parentProject === project.id)
+).sort((a, b) => (a.data.timelineOrder ?? 0) - (b.data.timelineOrder ?? 0))
+const programMeta = project.data.program
 const parentProject = project.data.parentProject
   ? (
       await getProjects(
@@ -189,11 +183,15 @@ const rawMarkdown = project.body
 
   {childResearchProjects.length > 0 && (
       <section class="research-strands" aria-labelledby="research-strands-title">
-        <p class="research-context-label">My PhD sub-project</p>
-        <h2 id="research-strands-title">Multimodal sensing for automotive radar</h2>
-        <p>
-          These connected research strands form my contribution within SPEAR.
+        <p class="research-context-label">
+          {programMeta?.strands?.label ?? "Sub-projects"}
         </p>
+        <h2 id="research-strands-title">
+          {programMeta?.strands?.title ?? "Research strands"}
+        </h2>
+        {programMeta?.strands?.description && (
+          <p>{programMeta.strands.description}</p>
+        )}
         <div class="research-strands-list">
           {childResearchProjects.map((childProject) => <ProjectRow project={childProject} />)}
         </div>

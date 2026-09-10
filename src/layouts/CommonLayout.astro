@@ -35,7 +35,7 @@ const {
     <div class="page-heading-row">
       <div class="page-heading-copy">
         <h1>{title}</h1>
-        {description && <p class="page-description">{description}</p>}
+        {description && <p class="muted-intro">{description}</p>}
         {modifiedTime && <FormattedDate date={modifiedTime} class="page-modified" />}
       </div>
       {Astro.slots.has("header-actions") && (
@@ -95,12 +95,8 @@ const {
     }
   }
 
-  .page-description,
   :global(.page-modified) {
     color: var(--muted-foreground);
-  }
-
-  :global(.page-modified) {
     font-size: var(--step--1);
   }
 

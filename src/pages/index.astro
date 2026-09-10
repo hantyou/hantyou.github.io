@@ -5,7 +5,7 @@ import { PROFILE, SITE } from "@site-config"
 import { PostManager } from "@/lib/blog"
 import { loadSelectedPublications } from "@/lib/publications/loader"
 import { getLatestUpdates } from "@/lib/updates"
-import { getProjects } from "@/lib/projects"
+import { getPrograms, getProgramStrands, getProjects } from "@/lib/projects"
 import Layout from "@/layouts/Layout.astro"
 import Button from "@/components/base/Button.astro"
 import CardGroup from "@/components/base/card/CardGroup.astro"
@@ -13,9 +13,7 @@ import PreviewCard from "@/components/blog/PreviewCard.astro"
 import Section from "@/components/layout/Section.astro"
 import Profile, { type ProfileAction } from "@/components/profile/Profile.astro"
 import PubCard from "@/components/publications/PubCard.astro"
-import ResearchTimeline, {
-  type ResearchTimelineAction,
-} from "@/components/research/ResearchTimeline.astro"
+import ResearchTimeline from "@/components/research/ResearchTimeline.astro"
 import ExperienceTimeline from "@/components/timeline/ExperienceTimeline.astro"
 import UpdatesInline from "@/components/timeline/UpdatesInline.astro"
 import GithubActivity from "@/components/projects/GithubActivity.astro"
@@ -67,25 +65,17 @@ const selectedPublications =
   publicationCount > 0
     ? (await loadSelectedPublications()).slice(0, publicationCount)
     : []
-const spearResearchProjects = (
-  await getProjects((project) => project.data.parentProject === "spear")
-).sort((a, b) => (a.data.timelineOrder ?? 0) - (b.data.timelineOrder ?? 0))
+const allProjects = await getProjects()
+const programs = getPrograms(allProjects)
+  .map((program) => ({
+    program,
+    strands: getProgramStrands(allProjects, program.id),
+  }))
+  .filter(({ strands }) => strands.length > 0)
 const githubProfile =
   typeof PROFILE.links.github === "object"
     ? PROFILE.links.github?.href
     : PROFILE.links.github
-const researchTimelineActions = [
-  {
-    href: "/projects/spear",
-    label: "Explore SPEAR",
-    variant: "accent-outline",
-  },
-  {
-    href: "/talks/eusipco-2026-3mt",
-    label: "See my EUSIPCO presentation",
-    variant: "ghost",
-  },
-] satisfies ResearchTimelineAction[]
 
 // Blog
 const postManager = PostManager.getInstance()
@@ -99,12 +89,9 @@ const recentPostsMetadata = await Promise.all(
 <Layout title="Home">
   <Profile profile={PROFILE} actions={profileActions} />
 
-  {spearResearchProjects.length > 0 && (
-      <ResearchTimeline
-        projects={spearResearchProjects}
-        actions={researchTimelineActions}
-      />
-    )}
+  {programs.map(({ program, strands }) => (
+      <ResearchTimeline program={program} projects={strands} />
+    ))}
 
   {careerHighlights.length > 0 && (
       <Section

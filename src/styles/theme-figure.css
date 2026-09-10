@@ -1,0 +1,44 @@
+/* Figures that ship a separate dark-mode rendering. The two <img> elements
+   are swapped on [data-theme] so the artwork stays legible on both page
+   backgrounds; the inactive copy is display:none and lazy-loads on demand. */
+.theme-figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2xs);
+  margin-inline: 0;
+}
+
+.theme-figure img {
+  display: block;
+  max-inline-size: 100%;
+  max-block-size: 30rem;
+  block-size: auto;
+}
+
+/* Scoped to the figure so these rules outrank `.theme-figure img` above
+   (which would otherwise keep the dark copy visible in light mode). */
+.theme-figure .theme-figure-dark {
+  display: none;
+}
+
+[data-theme="dark"] .theme-figure .theme-figure-light {
+  display: none;
+}
+
+[data-theme="dark"] .theme-figure .theme-figure-dark {
+  display: block;
+}
+
+.theme-figure figcaption {
+  color: var(--muted-foreground);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Opt-in smaller rendering for figures that would otherwise fill the
+   full prose column. */
+.theme-figure--half img {
+  max-inline-size: 50%;
+}

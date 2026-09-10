@@ -8,9 +8,10 @@ import Link from "@/components/base/Link.astro"
 
 interface Props {
   project: CollectionEntry<"projects">
+  boxed?: boolean
 }
 
-const { project } = Astro.props
+const { project, boxed = false } = Astro.props
 const { title, selected, code, doc, paper, url, release, skills } = project.data
 
 const links = getProjectLinks(code, doc, paper, url, release)
@@ -23,7 +24,10 @@ const titleHref = hasDetailPage ? `/projects/${project.id}` : primaryLink?.href
 ---
 
 <article
-  class:list={["project-row", { "is-highlighted": selected }]}
+  class:list={[
+    "project-row",
+    { "is-highlighted": selected, "project-row-boxed": boxed },
+  ]}
   data-project-skills={skills.map((skill) => slugify(skill)).join(",")}
 >
   <div class="project-row-head">
@@ -68,6 +72,20 @@ const titleHref = hasDetailPage ? `/projects/${project.id}` : primaryLink?.href
 
   .project-row[hidden] {
     display: none;
+  }
+
+  /* Boxed rows read as standalone cards. The extra inline padding on the
+     left reserves the gutter for the featured star, which is drawn outside
+     the title's text edge. */
+  .project-row-boxed {
+    padding: var(--space-s);
+    padding-inline-start: calc(var(--space-s) + 1rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklab, var(--muted) 26%, var(--background));
+    transition:
+      border-color var(--motion-duration) var(--motion-ease),
+      background-color var(--motion-duration) var(--motion-ease);
   }
 
   .project-row-head {
@@ -152,5 +170,13 @@ const titleHref = hasDetailPage ? `/projects/${project.id}` : primaryLink?.href
     color: var(--muted-foreground);
     font-size: var(--step--1);
     opacity: 0.75;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .project-row-boxed:hover,
+    .project-row-boxed:focus-within {
+      border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+      background: color-mix(in oklab, var(--muted) 45%, var(--background));
+    }
   }
 </style>

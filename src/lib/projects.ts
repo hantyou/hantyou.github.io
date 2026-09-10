@@ -58,6 +58,31 @@ export function getProjectSkillCounts(projects: Project[], minimum = 2) {
 }
 
 // ========================================
+// Program (large-scale project) Utilities
+// ========================================
+
+export const isProgram = (project: Project) => Boolean(project.data.program)
+
+export const getPrograms = (projects: Project[]) =>
+  projects.filter(isProgram).sort((a, b) => {
+    const orderA = a.data.program?.order ?? Number.MAX_SAFE_INTEGER
+    const orderB = b.data.program?.order ?? Number.MAX_SAFE_INTEGER
+    return orderA - orderB || a.data.title.localeCompare(b.data.title)
+  })
+
+export const getProgramStrands = (projects: Project[], programId: string) =>
+  projects
+    .filter((project) => project.data.parentProject === programId)
+    .sort((a, b) => (a.data.timelineOrder ?? 0) - (b.data.timelineOrder ?? 0))
+
+export const getProgramSlugs = (projects: Project[]) =>
+  new Set(
+    projects
+      .map((project) => project.data.parentProject)
+      .filter((slug): slug is string => Boolean(slug)),
+  )
+
+// ========================================
 // Project Data Management
 // ========================================
 

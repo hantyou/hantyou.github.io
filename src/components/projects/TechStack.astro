@@ -22,7 +22,7 @@ const { description, groups } = Astro.props
 ---
 
 <div class="tech-stack">
-  <p class="tech-stack-description">{description}</p>
+  <p class="muted-intro">{description}</p>
   <CardGroup columns={2} class="tech-stack-grid">
     {groups.map((group) => (
       <Card as="section" padding="compact" class="tech-stack-group">
@@ -47,14 +47,6 @@ const { description, groups } = Astro.props
     display: flex;
     flex-direction: column;
     gap: var(--space-s);
-  }
-
-  .tech-stack-description {
-    max-inline-size: 68ch;
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: var(--step--1);
-    text-wrap: pretty;
   }
 
   .tech-stack-grid {

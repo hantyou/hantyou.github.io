@@ -69,6 +69,39 @@ const people = defineCollection({
     }),
 })
 
+const projectActionVariantSchema = z.enum([
+  "default",
+  "primary",
+  "accent",
+  "destructive",
+  "outline",
+  "primary-outline",
+  "accent-outline",
+  "destructive-outline",
+  "ghost",
+])
+
+const programActionSchema = z.object({
+  href: z.string().trim().min(1),
+  label: z.string().trim().min(1).max(60),
+  variant: projectActionVariantSchema.optional(),
+})
+
+const programSchema = z.object({
+  eyebrow: z.string().trim().min(1).max(160).optional(),
+  heading: z.string().trim().min(1).max(80).optional(),
+  description: z.string().trim().min(1).max(320).optional(),
+  order: z.number().int().min(0).optional(),
+  actions: z.array(programActionSchema).max(6).default([]),
+  strands: z
+    .object({
+      label: z.string().trim().min(1).max(80).optional(),
+      title: z.string().trim().min(1).max(120).optional(),
+      description: z.string().trim().min(1).max(320).optional(),
+    })
+    .optional(),
+})
+
 const projects = defineCollection({
   loader: glob({ base: "./src/content/projects", pattern: "**/!(*README).md" }),
   schema: z
@@ -94,6 +127,7 @@ const projects = defineCollection({
         .default([])
         .transform((arr) => dedupPreserveCase(arr)),
       description: z.string().max(200).optional(),
+      program: programSchema.optional(),
     })
     .refine(
       (data) => !data.fromDate || !data.toDate || data.toDate >= data.fromDate,
