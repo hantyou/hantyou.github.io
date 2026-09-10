@@ -41,7 +41,7 @@ needed.
 ```yaml
 ---
 title: Sparsity-Aware Occupancy Grid Mapping
-event: Three Minute Thesis, EUSIPCO 2026
+event: 3 Minute Thesis, EUSIPCO 2026
 location: Bruges, Belgium
 date: 2026-09
 description: One or two lines shown on the card and used for SEO.
