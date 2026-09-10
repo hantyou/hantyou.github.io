@@ -1,0 +1,139 @@
+---
+import { Image } from "astro:assets"
+
+import { getTalkLinks, type Talk } from "@/lib/talks"
+import FormattedDate from "@/components/base/FormattedDate.astro"
+import Icon from "@/components/base/Icon.astro"
+import Link from "@/components/base/Link.astro"
+import Card from "@/components/base/card/Card.astro"
+import CardContent from "@/components/base/card/CardContent.astro"
+import CardDescription from "@/components/base/card/CardDescription.astro"
+import CardFooter from "@/components/base/card/CardFooter.astro"
+import CardMedia from "@/components/base/card/CardMedia.astro"
+import CardMeta from "@/components/base/card/CardMeta.astro"
+import CardTitle from "@/components/base/card/CardTitle.astro"
+
+interface Props {
+  talk: Talk
+}
+
+const { talk } = Astro.props
+const { title, event, location, date, description, thumbnail } = talk.data
+
+// The links render outside CardContent: that element is a stacking context,
+// so a footer nested in it would sit under the card's click overlay and its
+// links would never receive the click.
+const links = getTalkLinks(talk, "page")
+---
+
+<Card
+  href={`/talks/${talk.id}`}
+  label={`Talk: ${title}`}
+  class="talk-card"
+  data-has-thumbnail={thumbnail ? "true" : "false"}
+>
+  {thumbnail && (
+      <CardMedia
+        class="talk-card-media"
+        data-orientation={talk.data.thumbnailOrientation}
+      >
+        {/* Decorative: the card's own label already announces the talk. */}
+        <Image
+          src={thumbnail}
+          alt=""
+          widths={[400, 800, 1200]}
+          sizes="(max-width: 48rem) 100vw, 40vw"
+          class="talk-card-thumbnail"
+          loading="lazy"
+        />
+      </CardMedia>
+    )}
+
+  <CardContent class="talk-card-content">
+    <CardTitle>{title}</CardTitle>
+    <CardMeta class="talk-card-meta">
+      <span>{event}</span>
+      {location && <span>{location}</span>}
+      <FormattedDate
+        date={date}
+        options={{ year: "numeric", month: "short" }}
+      />
+    </CardMeta>
+    {description && <CardDescription>{description}</CardDescription>}
+  </CardContent>
+
+  {links.length > 0 && (
+      <CardFooter class="talk-card-links">
+        {links.map(({ href, icon, label }) => (
+          <Link href={href} class="talk-card-link">
+            <Icon name={icon} />
+            <span>{label}</span>
+          </Link>
+        ))}
+      </CardFooter>
+    )}
+</Card>
+
+<style>
+  .talk-card {
+    border-color: var(--border);
+    background: color-mix(in oklab, var(--muted) 26%, var(--background));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .talk-card:hover {
+      border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+      background: color-mix(in oklab, var(--muted) 45%, var(--background));
+    }
+  }
+
+  .talk-card-media {
+    display: block;
+    inline-size: 100%;
+    border-radius: var(--radius-lg);
+    overflow: clip;
+  }
+
+  .talk-card-thumbnail {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: 16 / 9;
+    /* Slides and posters are documents: show the whole page, not a crop. */
+    object-fit: contain;
+    background: white;
+  }
+
+  .talk-card-media[data-orientation="portrait"] .talk-card-thumbnail {
+    aspect-ratio: 3 / 4;
+  }
+
+  .talk-card-meta {
+    gap: var(--space-3xs) var(--space-2xs);
+  }
+
+  /* Separate the meta fields without punctuation in the markup, so screen
+     readers read three fields rather than one run-on string. The separator
+     trails its own field, so a wrap never starts a line with a stray dot. */
+  .talk-card-meta > :not(:last-child)::after {
+    margin-inline-start: var(--space-2xs);
+    content: "·";
+  }
+
+  .talk-card-links {
+    gap: var(--space-xs);
+  }
+
+  .talk-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  .talk-card-link :global(svg) {
+    inline-size: 0.9em;
+    block-size: 0.9em;
+  }
+</style>

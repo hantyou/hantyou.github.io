@@ -1,0 +1,11 @@
+[peiyuan]
+id       = "peiyuan"
+name     = "Peiyuan Zhai"
+pronouns = "he/him"
+bio        = "PhD researcher in Electrical Engineering at TU Delft"
+affiliation = "Signal Processing Systems Group"
+
+[peiyuan.links]
+email         = "p.zhai@tudelft.nl"
+github        = "https://github.com/hantyou"
+linkedin      = "https://www.linkedin.com/in/peiyuan-zhai"

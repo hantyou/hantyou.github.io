@@ -1,0 +1,58 @@
+:root {
+  /* TU Delft academic palette
+   * Light: crisp off-white background, deep navy text, TU Delft cyan accents
+   * Dark:  deep navy background, cool-gray text, lighter cyan accents
+   */
+  --background: light-dark(oklch(0.977 0.003 240), oklch(0.165 0.046 249));
+  --foreground: light-dark(oklch(0.22 0.04 252), oklch(0.882 0.016 254));
+  /* TU Delft Cyan #00A6D6 — slightly desaturated for print-readable contrast */
+  --primary: light-dark(oklch(0.635 0.127 213), oklch(0.715 0.127 211));
+  --primary-foreground: light-dark(oklch(1 0 0), oklch(1 0 0));
+  --muted: light-dark(oklch(0.93 0.004 240), oklch(0.255 0.038 249));
+  --muted-foreground: light-dark(oklch(0.56 0.018 248), oklch(0.71 0.012 250));
+  --accent: light-dark(oklch(0.635 0.127 213), oklch(0.715 0.127 211));
+  --accent-foreground: light-dark(
+    oklch(0.977 0.003 240),
+    oklch(0.165 0.046 249)
+  );
+  --interactive-background: color-mix(in oklab, var(--accent) 14%, transparent);
+  --interactive-border: color-mix(in oklab, var(--accent) 50%, var(--border));
+  --interactive-foreground: var(--foreground);
+  --destructive: light-dark(oklch(0.55 0.216 19.8), oklch(0.737 0.125 11.2));
+  --border: light-dark(oklch(0.875 0.006 240), oklch(1 0 0 / 18%));
+  --ring: light-dark(oklch(0.71 0 0), oklch(0.556 0 0));
+
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"],
+:root:has(#theme-toggle:checked) {
+  color-scheme: dark;
+}
+
+*,
+::before,
+::after,
+::backdrop,
+::file-selector-button {
+  border-color: var(--border);
+
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 0.25rem;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}

@@ -1,0 +1,33 @@
+---
+import CommonLayout from "@/layouts/CommonLayout.astro"
+
+const description =
+  "Teaching activities and academic calendar for Peiyuan Zhai."
+const calendarId = "us2popni850v4lodi950euhel7mngdp6@import.calendar.google.com"
+const calendarUrl = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(calendarId)}&ctz=Europe%2FAmsterdam`
+---
+
+<CommonLayout
+  title="Teaching"
+  description={description}
+  breadcrumbs={[{ label: "Teaching", icon: "file" }]}
+>
+  <p>
+    Course materials and teaching information will be added here as they become
+    available.
+  </p>
+  <iframe
+    title="Academic calendar"
+    src={calendarUrl}
+    class="academic-calendar"
+    loading="lazy"
+  ></iframe>
+</CommonLayout>
+
+<style>
+  .academic-calendar {
+    inline-size: 100%;
+    min-block-size: 37.5rem;
+    border: 0;
+  }
+</style>

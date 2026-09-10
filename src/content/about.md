@@ -1,0 +1,3 @@
+I am a Ph.D. researcher in **Electrical Engineering** at [Delft University of Technology](https://www.tudelft.nl/), advised by [Dr. Geethu Joseph](https://sites.google.com/view/geethujoseph/home). I work on autonomous perception and occupancy-grid mapping for autonomous vehicles, with a focus on radar–LiDAR sensor fusion and sparse Bayesian learning.
+
+Previously, I completed an M.Sc. in Electrical Engineering at TU Delft, researching distributed Gaussian-process learning for multi-agent systems. I also hold a B.Eng. in Information Engineering from [Xi'an Jiaotong University](https://en.xjtu.edu.cn/).

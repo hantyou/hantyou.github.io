@@ -1,0 +1,506 @@
+---
+import type { CollectionEntry } from "astro:content"
+
+import Button from "@/components/base/Button.astro"
+
+interface Props {
+  program: CollectionEntry<"projects">
+  projects: CollectionEntry<"projects">[]
+}
+
+const { program, projects } = Astro.props
+const initialProjectId = projects[0]?.id
+const programMeta = program.data.program
+const headingId = `research-timeline-title-${program.id}`
+
+const { fromDate, toDate } = program.data
+const fromYear = fromDate?.getFullYear()
+const toYear = toDate?.getFullYear()
+const programDates = fromYear
+  ? fromYear === toYear
+    ? `${fromYear}`
+    : `${fromYear}–${toYear ?? "Now"}`
+  : undefined
+---
+
+<section
+  class="research-timeline"
+  data-research-timeline
+  aria-labelledby={headingId}
+>
+  <div class="research-timeline-heading">
+    {(programMeta?.eyebrow || programDates) && (
+      <div class="research-timeline-eyebrow-row">
+        {programMeta?.eyebrow && (
+          <p class="research-timeline-eyebrow">{programMeta.eyebrow}</p>
+        )}
+        {programDates && <p class="research-timeline-dates">{programDates}</p>}
+      </div>
+    )}
+    <div class="research-timeline-heading-copy">
+      <h2 id={headingId}>{programMeta?.heading ?? "Research strands"}</h2>
+      {programMeta?.description && <p>{programMeta.description}</p>}
+      {(programMeta?.actions?.length ?? 0) > 0 && (
+        <div class="research-timeline-heading-actions">
+          {programMeta?.actions?.map((action) => (
+            <Button href={action.href} variant={action.variant ?? "ghost"}>
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <div class="research-timeline-layout">
+    <ol class="research-timeline-list" aria-label="Research strands">
+      {projects.map((project) => {
+        const panelId = `research-panel-${project.id}`
+        return (
+          <li>
+            <button
+              type="button"
+              class="research-timeline-trigger"
+              data-research-trigger={project.id}
+              aria-controls={panelId}
+              aria-expanded={project.id === initialProjectId ? "true" : "false"}
+            >
+              <span class="research-timeline-marker" aria-hidden="true"></span>
+              <span class="research-timeline-copy">
+                {project.data.timelineLabel && (
+                  <span class="research-timeline-label">{project.data.timelineLabel}</span>
+                )}
+                <strong>{project.data.title}</strong>
+                {project.data.description && <span>{project.data.description}</span>}
+              </span>
+            </button>
+          </li>
+        )
+      })}
+    </ol>
+
+    <div class="research-timeline-details">
+      {projects.map((project) => {
+        const panelId = `research-panel-${project.id}`
+        const publicationCount = project.data.relatedPublications.length
+        return (
+          <article
+            id={panelId}
+            class="research-timeline-panel"
+            data-research-panel={project.id}
+            aria-label={`${project.data.title} details`}
+            aria-hidden={project.id === initialProjectId ? "false" : "true"}
+            data-research-state={
+              project.id === initialProjectId ? "active" : "inactive"
+            }
+            hidden={project.id !== initialProjectId}
+          >
+            <div class="research-timeline-panel-header">
+              <p class="research-detail-kicker">{project.data.timelineLabel ?? "Research strand"}</p>
+            </div>
+            <h3>{project.data.title}</h3>
+            {project.data.researchQuestion && (
+              <div class="research-detail-block">
+                <p class="research-detail-label">Research question</p>
+                <p>{project.data.researchQuestion}</p>
+              </div>
+            )}
+            {project.data.contribution && (
+              <div class="research-detail-block">
+                <p class="research-detail-label">Contribution</p>
+                <p>{project.data.contribution}</p>
+              </div>
+            )}
+            <div class="research-timeline-actions">
+              <Button href={`/projects/${project.id}`} variant="accent-outline">
+                Explore research
+              </Button>
+              {publicationCount > 0 && (
+                <Button
+                  href={`/publications?project=${project.id}`}
+                  variant="ghost"
+                >
+                  {publicationCount === 1 ? "Related paper" : `${publicationCount} related papers`}
+                </Button>
+              )}
+            </div>
+          </article>
+        )
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .research-timeline {
+    display: grid;
+    gap: var(--space-l);
+    padding: var(--space-l);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--primary) 6%, transparent),
+        transparent 44%
+      ),
+      var(--background);
+  }
+
+  .research-timeline-heading {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .research-timeline-eyebrow-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+  }
+
+  .research-timeline-heading-copy {
+    display: grid;
+    gap: var(--space-3xs);
+    max-inline-size: 46rem;
+  }
+
+  .research-timeline-dates {
+    margin-inline-start: auto;
+    color: var(--muted-foreground);
+    font-size: var(--step--2);
+    font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .research-timeline-eyebrow,
+  .research-detail-kicker,
+  .research-detail-label {
+    margin: 0;
+    color: var(--primary);
+    font-size: var(--step--2);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .research-timeline-heading h2,
+  .research-timeline-heading p:not(.research-timeline-eyebrow) {
+    margin: 0;
+  }
+
+  .research-timeline-heading h2 {
+    font-size: var(--step-2);
+  }
+
+  .research-timeline-heading p:not(.research-timeline-eyebrow) {
+    color: var(--muted-foreground);
+  }
+
+  .research-timeline-heading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-block-start: var(--space-2xs);
+  }
+
+  .research-timeline-layout {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .research-timeline-list {
+    display: grid;
+    gap: var(--space-3xs);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .research-timeline-list li {
+    position: relative;
+  }
+
+  .research-timeline-list li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-block: calc(1.35rem + 0.625rem) calc(var(--space-3xs) * -1);
+    inset-inline-start: 0.625rem;
+    inline-size: 1px;
+    background: color-mix(in oklab, var(--primary) 38%, var(--border));
+  }
+
+  .research-timeline-trigger {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: var(--space-2xs);
+    inline-size: 100%;
+    padding: var(--space-xs);
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-duration) var(--motion-ease),
+      border-color var(--motion-duration) var(--motion-ease),
+      transform var(--motion-duration) var(--motion-ease);
+  }
+
+  .research-timeline-marker {
+    display: block;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    margin-block-start: 0.35rem;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-full);
+    background: var(--background);
+    box-shadow: 0 0 0 0.25rem var(--background);
+    transition:
+      background-color var(--motion-duration) var(--motion-ease),
+      box-shadow var(--motion-duration) var(--motion-ease),
+      transform var(--motion-duration) var(--motion-ease);
+  }
+
+  .research-timeline-copy {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .research-timeline-label {
+    color: var(--muted-foreground);
+    font-size: var(--step--2);
+  }
+
+  .research-timeline-copy strong {
+    font-size: var(--step-0);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .research-timeline-copy > span:last-child {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+
+  .research-timeline-trigger[aria-expanded="true"] {
+    border-color: color-mix(in oklab, var(--primary) 38%, var(--border));
+    background: color-mix(in oklab, var(--primary) 9%, transparent);
+  }
+
+  .research-timeline-trigger[aria-expanded="true"] .research-timeline-marker {
+    background: var(--primary);
+    box-shadow: 0 0 0 0.25rem
+      color-mix(in oklab, var(--primary) 12%, var(--background));
+    transform: scale(1.1);
+  }
+
+  .research-timeline-details {
+    display: grid;
+    min-block-size: 16rem;
+  }
+
+  .research-timeline-panel {
+    grid-area: 1 / 1;
+    align-self: stretch;
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklab, var(--muted) 48%, var(--background));
+  }
+
+  .research-timeline-panel {
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+    transition:
+      filter var(--motion-duration) var(--motion-ease),
+      opacity var(--motion-duration) var(--motion-ease),
+      transform var(--motion-duration) var(--motion-ease);
+  }
+
+  .research-timeline-panel[data-research-state="entering"] {
+    filter: blur(0.12rem);
+    opacity: 0;
+    transform: translateY(0.2rem) scale(0.995);
+  }
+
+  .research-timeline-panel[data-research-state="leaving"] {
+    filter: blur(0.12rem);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.12rem) scale(0.995);
+  }
+
+  .research-timeline-panel[hidden] {
+    display: none;
+  }
+
+  .research-timeline-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .research-timeline-panel h3,
+  .research-detail-block p {
+    margin: 0;
+  }
+
+  .research-timeline-panel h3 {
+    font-size: var(--step-1);
+  }
+
+  .research-detail-block {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .research-detail-block > p:last-child {
+    line-height: 1.55;
+  }
+
+  .research-timeline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-block-start: auto;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .research-timeline-trigger:hover,
+    .research-timeline-trigger:focus-visible {
+      border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+      background: color-mix(in oklab, var(--primary) 6%, transparent);
+      transform: translateX(0.15rem);
+    }
+  }
+
+  @media (width >= 52rem) {
+    .research-timeline-layout {
+      grid-template-columns: minmax(16rem, 0.9fr) minmax(20rem, 1.1fr);
+      align-items: stretch;
+    }
+
+    .research-timeline-list {
+      align-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .research-timeline-trigger,
+    .research-timeline-marker,
+    .research-timeline-panel {
+      animation-duration: 0.01ms;
+      transition-duration: 0.01ms;
+    }
+  }
+</style>
+
+<script>
+  const panelTransitionDuration = 260
+
+  function initResearchTimeline() {
+    const timelines = document.querySelectorAll<HTMLElement>(
+      "[data-research-timeline]",
+    )
+    const supportsHover = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches
+
+    timelines.forEach((timeline) => {
+      if (timeline.dataset.initialized === "true") return
+      timeline.dataset.initialized = "true"
+
+      const triggers = [
+        ...timeline.querySelectorAll<HTMLButtonElement>(
+          "[data-research-trigger]",
+        ),
+      ]
+      const panels = [
+        ...timeline.querySelectorAll<HTMLElement>("[data-research-panel]"),
+      ]
+      const defaultId = triggers[0]?.dataset.researchTrigger
+      let activeId = defaultId
+      let transitionToken = 0
+
+      function show(id: string) {
+        const previousId = activeId
+        activeId = id
+        triggers.forEach((trigger) => {
+          trigger.setAttribute(
+            "aria-expanded",
+            String(trigger.dataset.researchTrigger === id),
+          )
+        })
+
+        const nextPanel = panels.find(
+          (panel) => panel.dataset.researchPanel === id,
+        )
+        if (!nextPanel) return
+
+        const previousPanel = panels.find(
+          (panel) => panel.dataset.researchPanel === previousId,
+        )
+
+        if (!previousPanel || previousPanel === nextPanel) {
+          nextPanel.hidden = false
+          nextPanel.inert = false
+          nextPanel.setAttribute("aria-hidden", "false")
+          nextPanel.dataset.researchState = "active"
+          return
+        }
+
+        const token = ++transitionToken
+        panels.forEach((panel) => {
+          if (panel !== previousPanel && panel !== nextPanel) {
+            panel.hidden = true
+            panel.inert = true
+            panel.setAttribute("aria-hidden", "true")
+            panel.dataset.researchState = "inactive"
+          }
+        })
+
+        previousPanel.inert = true
+        previousPanel.setAttribute("aria-hidden", "true")
+        previousPanel.dataset.researchState = "leaving"
+        nextPanel.hidden = false
+        nextPanel.inert = false
+        nextPanel.setAttribute("aria-hidden", "false")
+        nextPanel.dataset.researchState = "entering"
+
+        requestAnimationFrame(() => {
+          if (token === transitionToken) {
+            nextPanel.dataset.researchState = "active"
+          }
+        })
+
+        window.setTimeout(() => {
+          if (token === transitionToken && activeId !== previousId) {
+            previousPanel.hidden = true
+            previousPanel.dataset.researchState = "inactive"
+          }
+        }, panelTransitionDuration)
+      }
+
+      triggers.forEach((trigger) => {
+        const id = trigger.dataset.researchTrigger
+        if (!id) return
+
+        trigger.addEventListener("focus", () => show(id))
+        trigger.addEventListener("click", () => show(id))
+        if (supportsHover) {
+          trigger.addEventListener("mouseenter", () => show(id))
+        }
+      })
+    })
+  }
+
+  document.addEventListener("astro:page-load", initResearchTimeline)
+  document.addEventListener("astro:after-swap", initResearchTimeline)
+</script>

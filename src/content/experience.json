@@ -1,0 +1,35 @@
+[
+  {
+    "id": "phd-delft",
+    "category": "research",
+    "title": "Ph.D. Researcher, Electrical Engineering",
+    "org": "Delft University of Technology (TU Delft)",
+    "orgUrl": "https://www.tudelft.nl/",
+    "startDate": "2023-02",
+    "endDate": "2027-02",
+    "location": "Delft, The Netherlands",
+    "description": "Autonomous perception and occupancy grid mapping for autonomous vehicles; radar-LiDAR sensor fusion and sparse Bayesian learning. Advised by Dr. Geethu Joseph, Signal Processing Systems Group."
+  },
+  {
+    "id": "msc-delft",
+    "category": "education",
+    "title": "M.Sc. in Electrical Engineering",
+    "org": "Delft University of Technology (TU Delft)",
+    "orgUrl": "https://www.tudelft.nl/",
+    "startDate": "2020-09",
+    "endDate": "2022-08",
+    "location": "Delft, The Netherlands",
+    "description": "Researched distributed Gaussian process learning for multi-agent systems under Dr. Raj Thilak Rajan."
+  },
+  {
+    "id": "beng-xjtu",
+    "category": "education",
+    "title": "B.Eng. in Information Engineering",
+    "org": "Xi'an Jiaotong University",
+    "orgUrl": "https://en.xjtu.edu.cn/",
+    "startDate": "2016-09",
+    "endDate": "2020-07",
+    "location": "Xi'an, China",
+    "description": "Information Engineering undergraduate degree. Thesis: Video Background Modeling using Gaussian Mixture Model. Grade: 86.44/100."
+  }
+]
