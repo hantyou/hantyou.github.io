@@ -1,14 +1,22 @@
 ---
 import type { CollectionEntry } from "astro:content"
 
-import Button from "@/components/base/Button.astro"
+import Button, {
+  type Props as ButtonProps,
+} from "@/components/base/Button.astro"
+
+export interface ResearchTimelineAction {
+  href: string
+  label: string
+  variant?: ButtonProps["variant"]
+}
 
 interface Props {
   projects: CollectionEntry<"projects">[]
-  spearHref?: string
+  actions?: ResearchTimelineAction[]
 }
 
-const { projects, spearHref } = Astro.props
+const { projects, actions = [] } = Astro.props
 const initialProjectId = projects[0]?.id
 ---
 
@@ -26,10 +34,12 @@ const initialProjectId = projects[0]?.id
       Explore the topic projects that connect my PhD research with its
       publications.
     </p>
-    {spearHref && (
-      <Button href={spearHref} variant="accent-outline" class="research-timeline-spear-link">
-        Explore SPEAR
-      </Button>
+    {actions.length > 0 && (
+      <div class="research-timeline-heading-actions">
+        {actions.map(({ href, label, variant = "ghost" }) => (
+          <Button {href} {variant}>{label}</Button>
+        ))}
+      </div>
     )}
   </div>
 
@@ -158,8 +168,10 @@ const initialProjectId = projects[0]?.id
     color: var(--muted-foreground);
   }
 
-  .research-timeline-spear-link {
-    justify-self: start;
+  .research-timeline-heading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
     margin-block-start: var(--space-2xs);
   }
 

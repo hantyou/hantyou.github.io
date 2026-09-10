@@ -3,7 +3,9 @@ import type { ProfileConfig } from "@/types"
 
 import Avatar from "@/components/base/Avatar.astro"
 import Badge from "@/components/base/Badge.astro"
-import Button from "@/components/base/Button.astro"
+import Button, {
+  type Props as ButtonProps,
+} from "@/components/base/Button.astro"
 import Icon from "@/components/base/Icon.astro"
 import Link from "@/components/base/Link.astro"
 import avatar from "@/assets/avatar.png"
@@ -16,17 +18,20 @@ import { Content as AboutContent } from "@/content/about.md"
 
 import "@/styles/callout.css"
 
-interface Props {
-  profile: ProfileConfig
+export interface ProfileAction {
+  href: string
+  label: string
+  variant?: ButtonProps["variant"]
 }
 
-const { profile } = Astro.props
+interface Props {
+  profile: ProfileConfig
+  actions?: ProfileAction[]
+}
+
+const { profile, actions = [] } = Astro.props
 
 const aboutLinks = getProfileLinkPlacement("about")
-const cvHref =
-  typeof profile.links.cv === "object"
-    ? profile.links.cv?.href
-    : profile.links.cv
 ---
 
 <article id="profile">
@@ -95,12 +100,13 @@ const cvHref =
           </div>
         )}
 
-      <div class="profile-actions">
-        {cvHref && <Button href={cvHref} variant="primary">Download CV</Button>}
-        <Button href="/projects" variant="accent-outline"
-          >Explore research</Button
-        >
-      </div>
+      {actions.length > 0 && (
+        <div class="profile-actions">
+          {actions.map(({ href, label, variant = "ghost" }) => (
+            <Button {href} {variant}>{label}</Button>
+          ))}
+        </div>
+      )}
     </div>
   </header>
 </article>

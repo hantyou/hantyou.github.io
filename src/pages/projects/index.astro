@@ -10,7 +10,9 @@ import Section from "@/components/layout/Section.astro"
 import GithubActivity from "@/components/projects/GithubActivity.astro"
 import GithubCard from "@/components/projects/GithubCard.astro"
 import ProjectRow from "@/components/projects/ProjectRow.astro"
-import ResearchTimeline from "@/components/research/ResearchTimeline.astro"
+import ResearchTimeline, {
+  type ResearchTimelineAction,
+} from "@/components/research/ResearchTimeline.astro"
 import TechStack from "@/components/projects/TechStack.astro"
 
 import "@/styles/chip-filter.css"
@@ -32,6 +34,18 @@ const githubProfile =
     ? PROFILE.links.github?.href
     : PROFILE.links.github
 const githubUsername = githubProfile?.replace(/\/$/, "").split("/").pop()
+const researchTimelineActions = [
+  {
+    href: "/projects/spear",
+    label: "Explore SPEAR",
+    variant: "accent-outline",
+  },
+  {
+    href: "/talks/eusipco-2026-3mt",
+    label: "See my EUSIPCO presentation",
+    variant: "ghost",
+  },
+] satisfies ResearchTimelineAction[]
 ---
 
 <CommonLayout
@@ -43,7 +57,10 @@ const githubUsername = githubProfile?.replace(/\/$/, "").split("/").pop()
 >
   <div class="projects-page">
     {spearResearchProjects.length > 0 && (
-      <ResearchTimeline projects={spearResearchProjects} spearHref="/projects/spear" />
+      <ResearchTimeline
+        projects={spearResearchProjects}
+        actions={researchTimelineActions}
+      />
     )}
 
     {githubProfile && <GithubActivity githubUrl={githubProfile} />}

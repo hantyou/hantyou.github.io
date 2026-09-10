@@ -11,9 +11,11 @@ import Button from "@/components/base/Button.astro"
 import CardGroup from "@/components/base/card/CardGroup.astro"
 import PreviewCard from "@/components/blog/PreviewCard.astro"
 import Section from "@/components/layout/Section.astro"
-import Profile from "@/components/profile/Profile.astro"
+import Profile, { type ProfileAction } from "@/components/profile/Profile.astro"
 import PubCard from "@/components/publications/PubCard.astro"
-import ResearchTimeline from "@/components/research/ResearchTimeline.astro"
+import ResearchTimeline, {
+  type ResearchTimelineAction,
+} from "@/components/research/ResearchTimeline.astro"
 import ExperienceTimeline from "@/components/timeline/ExperienceTimeline.astro"
 import UpdatesInline from "@/components/timeline/UpdatesInline.astro"
 import GithubActivity from "@/components/projects/GithubActivity.astro"
@@ -43,6 +45,22 @@ const cvHref =
   typeof PROFILE.links.cv === "object"
     ? PROFILE.links.cv?.href
     : PROFILE.links.cv
+const profileActions = [
+  ...(cvHref
+    ? [
+        {
+          href: cvHref,
+          label: "Download CV",
+          variant: "primary",
+        } satisfies ProfileAction,
+      ]
+    : []),
+  {
+    href: "/projects",
+    label: "Explore research",
+    variant: "accent-outline",
+  } satisfies ProfileAction,
+] satisfies ProfileAction[]
 const renderedUpdates =
   updateCount > 0 ? await getLatestUpdates(updateCount) : []
 const selectedPublications =
@@ -56,6 +74,18 @@ const githubProfile =
   typeof PROFILE.links.github === "object"
     ? PROFILE.links.github?.href
     : PROFILE.links.github
+const researchTimelineActions = [
+  {
+    href: "/projects/spear",
+    label: "Explore SPEAR",
+    variant: "accent-outline",
+  },
+  {
+    href: "/talks/eusipco-2026-3mt",
+    label: "See my EUSIPCO presentation",
+    variant: "ghost",
+  },
+] satisfies ResearchTimelineAction[]
 
 // Blog
 const postManager = PostManager.getInstance()
@@ -67,10 +97,13 @@ const recentPostsMetadata = await Promise.all(
 ---
 
 <Layout title="Home">
-  <Profile profile={PROFILE} />
+  <Profile profile={PROFILE} actions={profileActions} />
 
   {spearResearchProjects.length > 0 && (
-      <ResearchTimeline projects={spearResearchProjects} />
+      <ResearchTimeline
+        projects={spearResearchProjects}
+        actions={researchTimelineActions}
+      />
     )}
 
   {careerHighlights.length > 0 && (
