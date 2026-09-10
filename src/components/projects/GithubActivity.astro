@@ -8,6 +8,8 @@ interface Props {
   githubUrl?: string
   pollMs?: number
   compact?: boolean
+  showIntro?: boolean
+  width?: "full" | "half"
 }
 
 const {
@@ -16,6 +18,8 @@ const {
   githubUrl = "https://github.com",
   pollMs = 300_000,
   compact = false,
+  showIntro = true,
+  width = "full",
 } = Astro.props
 
 const ghUser = username || githubUrl.replace(/\/$/, "").split("/").pop() || ""
@@ -103,7 +107,9 @@ const activityTooltipId = `github-activity-tooltip-${ghUser.replace(/[^a-z0-9_-]
       data-poll-ms={pollMs}
       data-state="loading"
       data-compact={compact ? "true" : undefined}
+      data-width={width}
     >
+      {showIntro && (
         <div class="github-activity-intro">
           <p>
             {compact ? "Recent public coding activity from" : "Recent public activity from"}{" "}
@@ -117,6 +123,7 @@ const activityTooltipId = `github-activity-tooltip-${ghUser.replace(/[^a-z0-9_-]
             Syncing with GitHub…
           </span>
         </div>
+      )}
 
         <div class="github-activity-panel">
           <div class="github-activity-chart">
@@ -351,6 +358,12 @@ const activityTooltipId = `github-activity-tooltip-${ghUser.replace(/[^a-z0-9_-]
   github-activity[data-compact="true"] .github-activity-panel {
     gap: var(--space-xs);
     padding: var(--space-xs);
+  }
+
+  @media (width >= 48rem) {
+    github-activity[data-width="half"] {
+      inline-size: calc((100% - var(--space-2xs)) / 2);
+    }
   }
 
   @media (width < 40rem) {

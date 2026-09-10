@@ -149,7 +149,12 @@ const researchTimelineActions = [
       {githubProfile && (
           <section class="tech-stack-activity" aria-labelledby="tech-stack-activity-title">
             <h3 id="tech-stack-activity-title">GitHub activity</h3>
-            <GithubActivity githubUrl={githubProfile} compact />
+            <GithubActivity
+              githubUrl={githubProfile}
+              compact
+              showIntro={false}
+              width="half"
+            />
           </section>
         )}
     </Section>
