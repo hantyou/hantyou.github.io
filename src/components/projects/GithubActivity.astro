@@ -1,7 +1,6 @@
 ---
 import Link from "@/components/base/Link.astro"
 import Tooltip from "@/components/base/Tooltip.astro"
-import Section from "@/components/layout/Section.astro"
 
 interface Props {
   class?: string
@@ -98,16 +97,13 @@ const activityTooltipId = `github-activity-tooltip-${ghUser.replace(/[^a-z0-9_-]
 ---
 
 {ghUser && (
-    <Section
-      title={compact ? "Recent coding activity" : "GitHub Activity"}
-      class:list={["github-activity", className]}
+    <github-activity
+      class={className}
+      data-username={ghUser}
+      data-poll-ms={pollMs}
+      data-state="loading"
+      data-compact={compact ? "true" : undefined}
     >
-      <github-activity
-        data-username={ghUser}
-        data-poll-ms={pollMs}
-        data-state="loading"
-        data-compact={compact ? "true" : undefined}
-      >
         <div class="github-activity-intro">
           <p>
             {compact ? "Recent public coding activity from" : "Recent public activity from"}{" "}
@@ -173,8 +169,7 @@ const activityTooltipId = `github-activity-tooltip-${ghUser.replace(/[^a-z0-9_-]
             <a href={githubUrl}>GitHub</a> to view activity directly.
           </p>
         </noscript>
-      </github-activity>
-    </Section>
+    </github-activity>
   )}
 
 <style>

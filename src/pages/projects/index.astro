@@ -63,7 +63,6 @@ const researchTimelineActions = [
       />
     )}
 
-    {githubProfile && <GithubActivity githubUrl={githubProfile} />}
     {otherProjects.length > 0 && <div class="projects-list-wrapper">
       <div class="other-research-heading">
         <p class="research-eyebrow">Earlier work and research software</p>
@@ -147,6 +146,12 @@ const researchTimelineActions = [
 
     <Section title="Tech Stack" class="tech-stack-section">
       <TechStack {...techStack} />
+      {githubProfile && (
+          <section class="tech-stack-activity" aria-labelledby="tech-stack-activity-title">
+            <h3 id="tech-stack-activity-title">GitHub activity</h3>
+            <GithubActivity githubUrl={githubProfile} compact />
+          </section>
+        )}
     </Section>
     {githubRepo && (
         <Section title="On GitHub" class="github-showcase">
@@ -230,6 +235,18 @@ const researchTimelineActions = [
 
   .other-research-heading h2 {
     font-size: var(--step-1);
+  }
+
+  .tech-stack-activity {
+    display: grid;
+    gap: var(--space-2xs);
+    padding-block-start: var(--space-m);
+    border-block-start: 1px solid var(--border);
+  }
+
+  .tech-stack-activity h3 {
+    margin: 0;
+    font-size: var(--step-0);
   }
 
   .project-filters {

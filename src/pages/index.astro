@@ -155,7 +155,11 @@ const recentPostsMetadata = await Promise.all(
       </Section>
     )}
 
-  {githubProfile && <GithubActivity githubUrl={githubProfile} compact />}
+  {githubProfile && (
+      <Section title="Recent coding activity">
+        <GithubActivity githubUrl={githubProfile} compact />
+      </Section>
+    )}
 
   {hasServices && (
       <Section title="Services">
