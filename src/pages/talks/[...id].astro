@@ -5,16 +5,12 @@ import "@/styles/sidenote.css"
 import { render, type CollectionEntry } from "astro:content"
 
 import { withBase } from "@/lib/links"
-import {
-  getTalkLinks,
-  getTalks,
-  getYouTubeEmbedUrl,
-  PDF_VIEWER_PARAMS,
-} from "@/lib/talks"
+import { getTalkLinks, getTalks, getYouTubeEmbedUrl } from "@/lib/talks"
 import Layout from "@/layouts/Layout.astro"
 import Button from "@/components/base/Button.astro"
 import FormattedDate from "@/components/base/FormattedDate.astro"
 import Icon from "@/components/base/Icon.astro"
+import PDFViewer from "@/components/talks/PDFViewer.astro"
 
 export async function getStaticPaths() {
   const talks = await getTalks()
@@ -86,14 +82,12 @@ const documents = [
 
   {documents.map(({ id, href, label, portrait }) => (
       <section {id} class="talk-media" aria-label={`Talk ${label}`}>
-        <object
-          class:list={["talk-pdf", { "talk-pdf--portrait": portrait }]}
-          data={`${withBase(href)}${PDF_VIEWER_PARAMS}`}
-          type="application/pdf"
-          aria-label={`${title} — ${label}`}
-        >
-          <a href={withBase(href)}>Open the {label} PDF</a>
-        </object>
+        <PDFViewer
+          src={withBase(href)}
+          title={`${title} — ${label}`}
+          label={label}
+          portrait={portrait}
+        />
       </section>
     ))}
 
@@ -159,28 +153,13 @@ const documents = [
     scroll-margin-block-start: var(--page-offset-top);
   }
 
-  .talk-video,
-  .talk-pdf {
+  .talk-video {
     display: block;
     inline-size: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: var(--radius-xl);
-  }
-
-  .talk-video {
     border: 0;
+    border-radius: var(--radius-xl);
     background: var(--muted);
-  }
-
-  .talk-pdf {
-    border: 1px solid var(--border);
-    background: white;
-  }
-
-  .talk-pdf--portrait {
-    max-inline-size: 30rem;
-    aspect-ratio: 3 / 4;
-    margin-inline: auto;
   }
 
   .talk-abstract h2 {

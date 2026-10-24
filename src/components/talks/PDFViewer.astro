@@ -1,0 +1,601 @@
+---
+import Icon from "@/components/base/Icon.astro"
+
+interface Props {
+  src: string
+  title: string
+  label?: string
+  portrait?: boolean
+}
+
+const { src, title, label = "document", portrait = false } = Astro.props
+---
+
+<pdf-viewer
+  class:list={["pdf-viewer", { "pdf-viewer--portrait": portrait }]}
+  data-src={src}
+  data-label={label}
+>
+  <div class="pdf-viewer-bar" role="toolbar" aria-label={`${label} controls`}>
+    <div class="pdf-controls-group">
+      <button
+        type="button"
+        class="pdf-btn"
+        data-action="prev"
+        aria-label="Previous page"
+        disabled
+      >
+        <Icon name="left" />
+      </button>
+      <span class="pdf-page-status" aria-live="polite" aria-atomic="true">
+        <span data-page-current>1</span>
+        <span aria-hidden="true">/</span>
+        <span data-page-total>1</span>
+        <span class="sr-only">page</span>
+      </span>
+      <button
+        type="button"
+        class="pdf-btn"
+        data-action="next"
+        aria-label="Next page"
+        disabled
+      >
+        <Icon name="right" />
+      </button>
+    </div>
+
+    <div class="pdf-controls-group">
+      <button
+        type="button"
+        class="pdf-btn"
+        data-action="zoom-out"
+        aria-label="Zoom out"
+        disabled
+      >
+        <Icon name="mingcute:zoom-out-line" />
+      </button>
+      <span class="pdf-zoom-status" data-zoom-display aria-label="Current zoom">
+        100%
+      </span>
+      <button
+        type="button"
+        class="pdf-btn"
+        data-action="zoom-in"
+        aria-label="Zoom in"
+        disabled
+      >
+        <Icon name="mingcute:zoom-in-line" />
+      </button>
+      <a
+        href={src}
+        class="pdf-btn pdf-btn--download"
+        download
+        aria-label={`Download ${label} PDF`}
+      >
+        <Icon name="mingcute:download-line" />
+      </a>
+    </div>
+  </div>
+
+  <div class="pdf-stage" data-stage>
+    <div class="pdf-status" data-status role="status" aria-live="polite">
+      Loading {label}…
+    </div>
+    <canvas
+      class="pdf-canvas"
+      data-canvas
+      role="img"
+      aria-label={title}
+    ></canvas>
+    <div class="pdf-fallback" data-fallback hidden>
+      <p class="pdf-fallback-message">
+        Unable to display {label} directly in your browser.
+      </p>
+      <a href={src} class="pdf-fallback-link" download>
+        <Icon name="mingcute:download-line" />
+        <span>Download {label} (PDF)</span>
+      </a>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="pdf-fallback pdf-fallback--noscript">
+      <p class="pdf-fallback-message">
+        Interactive presentation requires JavaScript.
+      </p>
+      <a href={src} class="pdf-fallback-link" download>
+        <Icon name="mingcute:download-line" />
+        <span>Download {label} (PDF)</span>
+      </a>
+    </div>
+  </noscript>
+</pdf-viewer>
+
+<script>
+  import * as pdfjsLib from "pdfjs-dist"
+  import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url"
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker
+
+  class PDFViewerElement extends HTMLElement {
+    private pdfDoc: pdfjsLib.PDFDocumentProxy | null = null
+    private currentPageProxy: pdfjsLib.PDFPageProxy | null = null
+    private currentRenderTask: pdfjsLib.RenderTask | null = null
+
+    private currentPageNum = 1
+    private totalPages = 1
+    private zoomLevel = 1.0
+    private isRendering = false
+    private pendingRender = false
+    private lastStageWidth = 0
+
+    private resizeObserver: ResizeObserver | null = null
+    private resizeTimeout: number | undefined
+
+    private stageEl: HTMLElement | null = null
+    private canvasEl: HTMLCanvasElement | null = null
+    private statusEl: HTMLElement | null = null
+    private fallbackEl: HTMLElement | null = null
+    private prevBtn: HTMLButtonElement | null = null
+    private nextBtn: HTMLButtonElement | null = null
+    private zoomOutBtn: HTMLButtonElement | null = null
+    private zoomInBtn: HTMLButtonElement | null = null
+    private zoomDisplayEl: HTMLElement | null = null
+    private currentPageEl: HTMLElement | null = null
+    private totalPagesEl: HTMLElement | null = null
+
+    connectedCallback() {
+      this.stageEl = this.querySelector("[data-stage]")
+      this.canvasEl = this.querySelector("[data-canvas]")
+      this.statusEl = this.querySelector("[data-status]")
+      this.fallbackEl = this.querySelector("[data-fallback]")
+      this.prevBtn = this.querySelector('[data-action="prev"]')
+      this.nextBtn = this.querySelector('[data-action="next"]')
+      this.zoomOutBtn = this.querySelector('[data-action="zoom-out"]')
+      this.zoomInBtn = this.querySelector('[data-action="zoom-in"]')
+      this.zoomDisplayEl = this.querySelector("[data-zoom-display]")
+      this.currentPageEl = this.querySelector("[data-page-current]")
+      this.totalPagesEl = this.querySelector("[data-page-total]")
+
+      this.prevBtn?.addEventListener("click", this.handlePrev)
+      this.nextBtn?.addEventListener("click", this.handleNext)
+      this.zoomOutBtn?.addEventListener("click", this.handleZoomOut)
+      this.zoomInBtn?.addEventListener("click", this.handleZoomIn)
+
+      this.setAttribute("data-hydrated", "")
+
+      if (this.stageEl && typeof ResizeObserver !== "undefined") {
+        this.resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const newWidth = Math.floor(entry.contentRect.width)
+            if (newWidth > 0 && Math.abs(newWidth - this.lastStageWidth) >= 4) {
+              window.clearTimeout(this.resizeTimeout)
+              this.resizeTimeout = window.setTimeout(() => {
+                this.lastStageWidth = newWidth
+                this.requestRender()
+              }, 100)
+            }
+          }
+        })
+        this.resizeObserver.observe(this.stageEl)
+      }
+
+      this.loadDocument()
+    }
+
+    disconnectedCallback() {
+      window.clearTimeout(this.resizeTimeout)
+      this.resizeObserver?.disconnect()
+      this.resizeObserver = null
+
+      this.prevBtn?.removeEventListener("click", this.handlePrev)
+      this.nextBtn?.removeEventListener("click", this.handleNext)
+      this.zoomOutBtn?.removeEventListener("click", this.handleZoomOut)
+      this.zoomInBtn?.removeEventListener("click", this.handleZoomIn)
+
+      if (this.currentRenderTask) {
+        this.currentRenderTask.cancel()
+        this.currentRenderTask = null
+      }
+
+      if (this.currentPageProxy) {
+        this.currentPageProxy.cleanup()
+        this.currentPageProxy = null
+      }
+
+      if (this.pdfDoc) {
+        this.pdfDoc.destroy()
+        this.pdfDoc = null
+      }
+    }
+
+    private handlePrev = () => {
+      if (this.currentPageNum > 1) {
+        this.currentPageNum--
+        this.updateControls()
+        this.requestRender()
+      }
+    }
+
+    private handleNext = () => {
+      if (this.currentPageNum < this.totalPages) {
+        this.currentPageNum++
+        this.updateControls()
+        this.requestRender()
+      }
+    }
+
+    private handleZoomIn = () => {
+      if (this.zoomLevel < 2.5) {
+        this.zoomLevel = Math.min(
+          2.5,
+          Math.round((this.zoomLevel + 0.25) * 100) / 100,
+        )
+        this.updateControls()
+        this.requestRender()
+      }
+    }
+
+    private handleZoomOut = () => {
+      if (this.zoomLevel > 0.5) {
+        this.zoomLevel = Math.max(
+          0.5,
+          Math.round((this.zoomLevel - 0.25) * 100) / 100,
+        )
+        this.updateControls()
+        this.requestRender()
+      }
+    }
+
+    private updateControls() {
+      if (this.prevBtn) {
+        this.prevBtn.disabled = this.currentPageNum <= 1
+      }
+      if (this.nextBtn) {
+        this.nextBtn.disabled = this.currentPageNum >= this.totalPages
+      }
+      if (this.zoomOutBtn) {
+        this.zoomOutBtn.disabled = this.zoomLevel <= 0.5
+      }
+      if (this.zoomInBtn) {
+        this.zoomInBtn.disabled = this.zoomLevel >= 2.5
+      }
+      if (this.zoomDisplayEl) {
+        this.zoomDisplayEl.textContent = `${Math.round(this.zoomLevel * 100)}%`
+      }
+      if (this.currentPageEl) {
+        this.currentPageEl.textContent = String(this.currentPageNum)
+      }
+      if (this.totalPagesEl) {
+        this.totalPagesEl.textContent = String(this.totalPages)
+      }
+    }
+
+    private async loadDocument() {
+      const src = this.getAttribute("data-src")
+      if (!src) {
+        this.showError()
+        return
+      }
+
+      try {
+        const loadingTask = pdfjsLib.getDocument({ url: src })
+        this.pdfDoc = await loadingTask.promise
+        this.totalPages = this.pdfDoc.numPages
+
+        this.updateControls()
+        this.requestRender()
+      } catch (err) {
+        console.error("PDF loading error:", err)
+        this.showError()
+      }
+    }
+
+    private requestRender() {
+      if (!this.pdfDoc || !this.stageEl || !this.canvasEl) return
+
+      if (this.isRendering) {
+        this.pendingRender = true
+        if (this.currentRenderTask) {
+          this.currentRenderTask.cancel()
+        }
+        return
+      }
+
+      this.isRendering = true
+      this.renderLoop()
+    }
+
+    private async renderLoop() {
+      try {
+        do {
+          this.pendingRender = false
+          await this.renderCurrentPage()
+        } while (this.pendingRender)
+      } finally {
+        this.isRendering = false
+      }
+    }
+
+    private async renderCurrentPage() {
+      if (!this.pdfDoc || !this.stageEl || !this.canvasEl) return
+
+      const stageWidth = this.stageEl.clientWidth
+      if (stageWidth <= 0) return
+
+      this.lastStageWidth = stageWidth
+
+      try {
+        if (
+          this.currentPageProxy &&
+          this.currentPageProxy.pageNumber !== this.currentPageNum
+        ) {
+          this.currentPageProxy.cleanup()
+          this.currentPageProxy = null
+        }
+
+        if (
+          !this.currentPageProxy ||
+          this.currentPageProxy.pageNumber !== this.currentPageNum
+        ) {
+          this.currentPageProxy = await this.pdfDoc.getPage(this.currentPageNum)
+        }
+
+        const page = this.currentPageProxy
+        const unscaledViewport = page.getViewport({ scale: 1 })
+        const fitScale = stageWidth / unscaledViewport.width
+        const displayScale = fitScale * this.zoomLevel
+
+        const baseDpr = Math.min(window.devicePixelRatio || 1, 2)
+        const cssWidth = Math.floor(displayScale * unscaledViewport.width)
+        const cssHeight = Math.floor(displayScale * unscaledViewport.height)
+
+        const maxDim = 4096
+        let dpr = baseDpr
+        if (Math.max(cssWidth, cssHeight) * dpr > maxDim) {
+          dpr = Math.max(1, maxDim / Math.max(cssWidth, cssHeight))
+        }
+
+        const renderViewport = page.getViewport({ scale: displayScale * dpr })
+
+        const canvas = this.canvasEl
+        canvas.width = Math.floor(renderViewport.width)
+        canvas.height = Math.floor(renderViewport.height)
+        canvas.style.width = `${cssWidth}px`
+        canvas.style.height = `${cssHeight}px`
+
+        const renderTask = page.render({
+          canvas,
+          viewport: renderViewport,
+        })
+        this.currentRenderTask = renderTask
+
+        await renderTask.promise
+        this.currentRenderTask = null
+
+        this.setAttribute("data-ready", "")
+        if (this.statusEl) {
+          this.statusEl.hidden = true
+        }
+      } catch (err: unknown) {
+        this.currentRenderTask = null
+        if (
+          err &&
+          typeof err === "object" &&
+          "name" in err &&
+          err.name === "RenderingCancelledException"
+        ) {
+          return
+        }
+        console.error("PDF render error:", err)
+        this.showError()
+      }
+    }
+
+    private showError() {
+      if (this.statusEl) {
+        this.statusEl.hidden = true
+      }
+      if (this.canvasEl) {
+        this.canvasEl.hidden = true
+      }
+      if (this.fallbackEl) {
+        this.fallbackEl.hidden = false
+      }
+    }
+  }
+
+  if (!customElements.get("pdf-viewer")) {
+    customElements.define("pdf-viewer", PDFViewerElement)
+  }
+</script>
+
+<style>
+  .pdf-viewer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    inline-size: 100%;
+  }
+
+  .pdf-viewer--portrait {
+    max-inline-size: 30rem;
+    margin-inline: auto;
+  }
+
+  /* Hide interactive toolbar until script mounts and first page renders */
+  .pdf-viewer:not([data-ready]) .pdf-viewer-bar {
+    display: none;
+  }
+
+  /* Hide stage when JS is disabled entirely */
+  .pdf-viewer:not([data-hydrated]) .pdf-stage {
+    display: none;
+  }
+
+  .pdf-viewer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    padding: var(--space-3xs) var(--space-2xs);
+    background: color-mix(in oklab, var(--muted) 35%, var(--background));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .pdf-controls-group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+  }
+
+  .pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--control-size-compact);
+    block-size: var(--control-size-compact);
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--foreground);
+    font-size: var(--step--1);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--motion-duration) var(--motion-ease),
+      border-color var(--motion-duration) var(--motion-ease),
+      color var(--motion-duration-fast) var(--motion-ease),
+      opacity var(--motion-duration-fast) var(--motion-ease);
+  }
+
+  .pdf-btn :global(svg) {
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pdf-btn:not(:disabled):hover {
+      border-color: var(--border);
+      background: var(--muted);
+    }
+  }
+
+  .pdf-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .pdf-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .pdf-page-status,
+  .pdf-zoom-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 3.5rem;
+    padding: 0 var(--space-3xs);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+    user-select: none;
+  }
+
+  .pdf-zoom-status {
+    min-inline-size: 3rem;
+  }
+
+  .pdf-stage {
+    position: relative;
+    overflow: auto;
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    min-block-size: 12rem;
+    background: color-mix(in oklab, var(--muted) 35%, var(--background));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pdf-viewer--portrait .pdf-stage {
+    aspect-ratio: 3 / 4;
+  }
+
+  .pdf-viewer[data-ready] .pdf-stage {
+    aspect-ratio: auto;
+    min-block-size: 0;
+    display: block;
+  }
+
+  .pdf-status {
+    padding: var(--space-m);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    text-align: center;
+  }
+
+  .pdf-canvas {
+    display: block;
+    margin-inline: auto;
+    background: white;
+    box-shadow: 0 4px 16px
+      color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+
+  .pdf-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-s);
+    padding: var(--space-xl) var(--space-m);
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklab, var(--muted) 25%, var(--background));
+  }
+
+  .pdf-fallback-message {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: var(--step-0);
+  }
+
+  .pdf-fallback-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: opacity var(--motion-duration-fast) var(--motion-ease);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pdf-fallback-link:hover {
+      opacity: 0.9;
+    }
+  }
+
+  .pdf-fallback-link :global(svg) {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+</style>

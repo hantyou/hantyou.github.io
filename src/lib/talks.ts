@@ -5,12 +5,6 @@ import { PUBLICATION_LINK_TYPES } from "@icon-config"
 export type Talk = CollectionEntry<"talks">
 
 /**
- * Viewer parameters for an embedded PDF. A single slide fills the frame better
- * without the browser's toolbar and page sidebar competing for the same box.
- */
-export const PDF_VIEWER_PARAMS = "#toolbar=0&navpanes=0&view=FitH"
-
-/**
  * Convert a YouTube watch, share, or embed URL into its nocookie embed form.
  * Returns null for anything that isn't recognizably YouTube, so callers can
  * fall back to a plain link rather than embedding a broken frame.
