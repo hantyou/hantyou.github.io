@@ -4,7 +4,7 @@ event: Tutorial, IEEE SENSORS 2026
 location: Rotterdam, the Netherlands
 date: 2026-10-25
 description: "A tutorial on occupancy grid mapping: from Bayesian inverse sensor models to learning-based OGM, dynamic and semantic grids, sensor anomalies, and mapping-quality evaluation."
-slides: /assets/pdf/ieee-sensors-2026-ogm-tutorial-placeholder.pdf
+slides: /assets/pdf/ieee-sensors-2026-ogm-tutorial.pdf
 thumbnail: ../../assets/talks/ieee-sensors-2026-ogm-tutorial.png
 ---
 
