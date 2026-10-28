@@ -147,6 +147,16 @@ const talks = defineCollection({
       date: yearMonthDateSchema,
       description: z.string().max(200).optional(),
       video: z.url().optional(),
+      videos: z
+        .array(
+          z.object({
+            src: z.string().startsWith("/"),
+            title: z.string().trim().min(1).max(120),
+            pageNumber: z.number().int().positive(),
+            slideTitle: z.string().trim().min(1).max(120),
+          }),
+        )
+        .default([]),
       slides: z
         .string()
         .startsWith("/")

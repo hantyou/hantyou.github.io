@@ -27,8 +27,17 @@ type Props = {
 
 const { talk } = Astro.props
 const { Content } = await render(talk)
-const { title, event, location, date, description, video, slides, poster } =
-  talk.data
+const {
+  title,
+  event,
+  location,
+  date,
+  description,
+  video,
+  videos,
+  slides,
+  poster,
+} = talk.data
 
 const links = getTalkLinks(talk)
 const embedUrl = video ? getYouTubeEmbedUrl(video) : null
@@ -81,15 +90,39 @@ const documents = [
     )}
 
   {documents.map(({ id, href, label, portrait }) => (
-      <section {id} class="talk-media" aria-label={`Talk ${label}`}>
-        <PDFViewer
-          src={withBase(href)}
-          title={`${title} — ${label}`}
-          label={label}
-          portrait={portrait}
-        />
-      </section>
-    ))}
+    <section {id} class="talk-media" aria-label={`Talk ${label}`}>
+      <PDFViewer
+        src={withBase(href)}
+        title={`${title} — ${label}`}
+        label={label}
+        portrait={portrait}
+      />
+    </section>
+  ))}
+
+  {videos.map(({ src, title: videoTitle, pageNumber, slideTitle }) => (
+    <section class="talk-media" aria-labelledby={`video-${pageNumber}-title`}>
+      <h2 id={`video-${pageNumber}-title`} class="talk-video-title">
+        {videoTitle}
+      </h2>
+      <p class="talk-video-caption">
+        PDF page {pageNumber}: {slideTitle}
+        {slides && (
+          <a href={`${withBase(slides)}#page=${pageNumber}`} target="_blank" rel="noreferrer">
+            View PDF page
+          </a>
+        )}
+      </p>
+    <video
+      class="talk-video"
+      src={withBase(src)}
+      controls
+      playsinline
+      preload="metadata"
+      aria-label={`${videoTitle}, shown on PDF page ${pageNumber}`}
+    />
+  </section>
+  ))}
 
   {talk.body?.trim() && (
       <section class="talk-abstract" aria-labelledby="talk-abstract-title">
@@ -160,6 +193,21 @@ const documents = [
     border: 0;
     border-radius: var(--radius-xl);
     background: var(--muted);
+  }
+
+  .talk-video-title {
+    margin-block: 0 var(--space-2xs);
+    font-size: var(--step-1);
+  }
+
+  .talk-video-caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3xs) var(--space-2xs);
+    margin-block: 0 var(--space-xs);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
   }
 
   .talk-abstract h2 {

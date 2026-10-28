@@ -63,7 +63,19 @@ lowercase and kebab-case.
 `https://www.youtube.com/watch?v=ID`, or a `/shorts/` or `/live/` link). The
 talk page converts it to a privacy-preserving `youtube-nocookie.com` embed and
 renders a responsive 16:9 player. A URL that isn't recognizably YouTube still
-gets a link on the card, just no embedded player.
+gets a link on the card, just no embedded player. For a talk with multiple
+self-hosted clips, use `videos` instead:
+
+```yaml
+videos:
+  - src: /assets/videos/demo.mp4
+    title: Dynamic target detection
+    pageNumber: 16
+    slideTitle: Improved dynamic target detection
+```
+
+The detail page renders each file as a native video player and links to its PDF
+page. Keep video files small and public when using this approach.
 
 ### Slides and posters
 
