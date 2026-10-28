@@ -1,7 +1,7 @@
 ---
 title: "Radar-Based Sparsity-Aware Dynamic Occupancy Grid Mapping"
 event: IEEE SENSORS 2026
-location: Mees II, Rotterdam, the Netherlands
+location: Rotterdam, the Netherlands
 date: 2026-10-27
 description: "Conference presentation on using radar Doppler and spatial structure for sparsity-aware dynamic occupancy grid mapping."
 slides: /assets/pdf/ieee-sensors-2026-radar-based-sparsity-aware-dogm.pdf
