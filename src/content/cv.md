@@ -12,7 +12,6 @@ PhD researcher in Electrical Engineering at Delft University of Technology (expe
 
 - **Patent family:** co-inventor of "Occupancy grid mapping system and method", published in 2025 as US20250336088A1, EP4641250A1, and CN120846354A.
 - **Publications:** 3 IEEE Sensors Journal articles and 4 conference papers (IEEE SENSORS, ICASSP) on occupancy mapping, sensor fusion, and distributed learning.
-- **Industry collaboration:** research carried out with NXP Semiconductors.
 - **Mentoring:** daily supervisor of an MSc thesis that led to a journal article and a conference paper.
 - **Teaching:** co-presented a tutorial on occupancy maps for autonomous driving and robotics at IEEE SENSORS 2026.
 
